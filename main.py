@@ -16,15 +16,15 @@ async def main(page: ft.Page):
     ust_txt = ft.Text("Can: 3 | P: 0 | Svy: 1", size=12, weight=ft.FontWeight.BOLD, color="#ff6b81")
     altin_txt = ft.Text("Altin: 50", size=12, weight=ft.FontWeight.BOLD, color="#ffd32a")
     bar = ft.ProgressBar(value=1.0, width=300, height=11, color="#00b894", bgcolor="#1e1e3f")
-    kose1 = ft.Text("?", size=16, weight=ft.FontWeight.BOLD, color="white")
-    kose2 = ft.Text("?", size=16, weight=ft.FontWeight.BOLD, color="white")
+    kose1 = ft.Text("?", size=15, weight=ft.FontWeight.BOLD, color="white")
+    kose2 = ft.Text("?", size=15, weight=ft.FontWeight.BOLD, color="white")
     soru_txt = ft.Text("HIZLI MAT", size=22, weight=ft.FontWeight.BOLD, color="#121225", text_align=ft.TextAlign.CENTER)
     cevap_txt = ft.Text("UNO", size=20, weight=ft.FontWeight.BOLD, color="#0f3460", text_align=ft.TextAlign.CENTER)
 
     kart_ic = ft.Container(
         content=ft.Column(
             [
-                ft.Row([kose1], alignment=ft.MainAxisAlignment.START),
+                ft.Row([kose1], alignment=ft.MainAxisAlignment.START, width=215),
                 ft.Container(
                     content=ft.Column(
                         [soru_txt, cevap_txt],
@@ -34,19 +34,23 @@ async def main(page: ft.Page):
                     ),
                     bgcolor="white",
                     border_radius=36,
-                    padding=ft.Padding.symmetric(horizontal=22, vertical=6),
+                    width=175,
+                    height=82,
                     alignment=ft.Alignment(0, 0),
                 ),
-                ft.Row([kose2], alignment=ft.MainAxisAlignment.END),
+                ft.Row([kose2], alignment=ft.MainAxisAlignment.END, width=215),
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            width=215,
+            height=145,
         ),
         bgcolor="#e74c3c",
         border_radius=14,
         padding=10,
         width=235,
         height=165,
+        alignment=ft.Alignment(0, 0),
     )
     kart_dis = ft.Container(content=kart_ic, bgcolor="white", border_radius=18, padding=6)
     msg_txt = ft.Text("Hazir oldugunda OYNA butonuna bas!", size=13, weight=ft.FontWeight.BOLD, color="#ffd32a", text_align=ft.TextAlign.CENTER)
@@ -82,13 +86,13 @@ async def main(page: ft.Page):
 
     def yeni_soru():
         d["aktif"] = True
-        d["kalan"] = 7.0
-        d["max"] = 7.0
-        d["donma"] = 0.0
-        d["girdi"] = ""
         ys = 1 if d["puan"] < 50 else (2 if d["puan"] < 100 else 3)
         if ys > d["svy"]:
             d["svy"] = ys
+        d["kalan"] = 7.0 + (d["svy"] - 1) * 3.0
+        d["max"] = d["kalan"]
+        d["donma"] = 0.0
+        d["girdi"] = ""
         ust = 10 if d["svy"] == 1 else (20 if d["svy"] == 2 else 50)
         s1, s2 = random.randint(1, ust), random.randint(1, ust)
         isl = random.choice(["+", "-", "*"])
