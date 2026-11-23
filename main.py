@@ -3,18 +3,25 @@ import flet as ft, random, asyncio
 async def main(page: ft.Page):
     page.title = "Hizli Matematik"
     page.bgcolor = "#121225"
+    page.padding = 0
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.padding = 12
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
     uno = ["#e74c3c", "#2980b9", "#27ae60", "#f39c12"]
-    d = {"puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 7.0, "max": 7.0, "donma": 0.0, "aktif": True, "dur": False, "altin": 50, "rekor": 0, "kombo": 0, "jd": 1, "js": 0, "jc": 0, "girdi": "", "soru": "12 + 8", "simge": "+", "renk": "#e74c3c"}
+    d = {
+        "puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 7.0, "max": 7.0,
+        "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0,
+        "kombo": 0, "jd": 1, "js": 0, "jc": 0, "girdi": "", "soru": "12 + 8",
+        "simge": "+", "renk": "#e74c3c"
+    }
 
     ust_txt = ft.Text("Can: 3 | Puan: 0 | Svy: 1", size=13, weight=ft.FontWeight.BOLD, color="#ff6b81")
     altin_txt = ft.Text("Altin: 50", size=13, weight=ft.FontWeight.BOLD, color="#ffd32a")
-    bar = ft.ProgressBar(value=1.0, width=340, height=11, color="#00b894", bgcolor="#1e1e3f")
-    kose1 = ft.Text("+", size=16, weight=ft.FontWeight.BOLD, color="white")
-    kose2 = ft.Text("+", size=16, weight=ft.FontWeight.BOLD, color="white")
-    soru_txt = ft.Text("12 + 8", size=28, weight=ft.FontWeight.BOLD, color="#121225")
-    cevap_txt = ft.Text("?", size=24, weight=ft.FontWeight.BOLD, color="#0f3460")
+    bar = ft.ProgressBar(value=1.0, height=11, color="#00b894", bgcolor="#1e1e3f")
+    kose1 = ft.Text("?", size=16, weight=ft.FontWeight.BOLD, color="white")
+    kose2 = ft.Text("?", size=16, weight=ft.FontWeight.BOLD, color="white")
+    soru_txt = ft.Text("HIZLI MAT", size=24, weight=ft.FontWeight.BOLD, color="#121225")
+    cevap_txt = ft.Text("UNO", size=20, weight=ft.FontWeight.BOLD, color="#0f3460")
 
     kart_ic = ft.Container(
         content=ft.Column(
@@ -33,18 +40,19 @@ async def main(page: ft.Page):
         bgcolor="#e74c3c",
         border_radius=14,
         padding=10,
-        width=230,
+        width=240,
         height=165,
     )
     kart_dis = ft.Container(content=kart_ic, bgcolor="white", border_radius=18, padding=6)
-    msg_txt = ft.Text("UNO Kartlari ve Magaza Aktif!", size=12, weight=ft.FontWeight.BOLD, color="#a2a8d3", text_align=ft.TextAlign.CENTER)
+    msg_txt = ft.Text("Hazir oldugunda OYNA butonuna bas!", size=13, weight=ft.FontWeight.BOLD, color="#ffd32a", text_align=ft.TextAlign.CENTER)
 
     def guncelle():
         ust_txt.value = f"Can: {d['can']} | Puan: {d['puan']} | Svy: {d['svy']}"
         altin_txt.value = f"Altin: {d['altin']}"
         d_btn.content = f"Dondur 5s ({d['jd']})"
         s_btn.content = f"+10sn ({d['js']})"
-        cevap_txt.value = d["girdi"] if d["girdi"] != "" else "?"
+        if d["aktif"]:
+            cevap_txt.value = d["girdi"] if d["girdi"] != "" else "?"
         page.update()
 
     def duraklat_degis(e=None):
@@ -52,7 +60,7 @@ async def main(page: ft.Page):
             return
         d["dur"] = not d["dur"]
         if d["dur"]:
-            p_btn.content = "> Devam"
+            p_btn.content = ">"
             p_btn.bgcolor = "#00b894"
             kart_ic.bgcolor = "#636e72"
             soru_txt.value = "DURAKLATILDI"
@@ -97,10 +105,13 @@ async def main(page: ft.Page):
             d["rekor"] = d["puan"]
         kart_ic.bgcolor = "#e74c3c"
         soru_txt.value = "OYUN BITTI"
+        cevap_txt.value = f"{d['puan']} P"
         kose1.value = "X"
         kose2.value = "X"
-        msg_txt.value = f"{sebep} | Puan: {d['puan']} | Rekor: {d['rekor']}"
+        msg_txt.value = f"{sebep} | Rekor: {d['rekor']}"
         msg_txt.color = "#ff7675"
+        oyna_btn.visible = False
+        gonder_btn.visible = False
         tekrar_btn.visible = True
         guncelle()
 
@@ -126,6 +137,7 @@ async def main(page: ft.Page):
     def magaza(e):
         if d["dur"]:
             return
+        zaten_pasif = not d["aktif"]
         d["dur"] = True
         m_txt = ft.Text(f"Mevcut Altin: {d['altin']} | Ekstra Can: +{d['jc']}", color="#ffd32a", weight=ft.FontWeight.BOLD)
 
@@ -152,6 +164,8 @@ async def main(page: ft.Page):
 
         def kapat(e=None):
             d["dur"] = False
+            if zaten_pasif:
+                d["aktif"] = False
             page.pop_dialog()
 
         dlg = ft.AlertDialog(
@@ -172,7 +186,7 @@ async def main(page: ft.Page):
         page.show_dialog(dlg)
 
     def tus(t):
-        if d["can"] <= 0 or d["dur"]:
+        if not d["aktif"] or d["can"] <= 0 or d["dur"]:
             return
         if t == "SIL":
             d["girdi"] = d["girdi"][:-1]
@@ -183,7 +197,7 @@ async def main(page: ft.Page):
         guncelle()
 
     def kontrol(e=None):
-        if d["can"] <= 0 or d["dur"]:
+        if not d["aktif"] or d["can"] <= 0 or d["dur"]:
             return
         try:
             cvp = int(d["girdi"])
@@ -211,20 +225,24 @@ async def main(page: ft.Page):
                 msg_txt.color = "#ff7675"
                 yeni_soru()
 
-    def tekrar(e=None):
+    def oyunu_baslat(e=None):
         d["puan"] = 0
         d["can"] = 3 + d["jc"]
         d["svy"] = 1
         d["kombo"] = 0
+        oyna_btn.visible = False
         tekrar_btn.visible = False
-        msg_txt.value = f"Yeni oyun! ({d['can']} Can)"
-        msg_txt.color = "#a2a8d3"
+        gonder_btn.visible = True
+        msg_txt.value = f"Basladi! ({d['can']} Can) - Hizli Coz!"
+        msg_txt.color = "#00b894"
         yeni_soru()
 
-    p_btn = ft.Button("II", bgcolor="#636e72", color="white", width=48, on_click=duraklat_degis)
+    p_btn = ft.Button("II", bgcolor="#636e72", color="white", width=44, on_click=duraklat_degis)
     d_btn = ft.Button("Dondur 5s (1)", bgcolor="#0984e3", color="white", on_click=lambda _: joker("d"))
     s_btn = ft.Button("+10sn (0)", bgcolor="#6c5ce7", color="white", on_click=lambda _: joker("s"))
-    tekrar_btn = ft.Button("TEKRAR OYNA", bgcolor="#ff4757", color="white", width=220, height=44, visible=False, on_click=tekrar)
+    oyna_btn = ft.Button("OYNA", bgcolor="#0984e3", color="white", width=270, height=50, on_click=oyunu_baslat)
+    gonder_btn = ft.Button("GONDER", bgcolor="#00b894", color="white", width=270, height=48, visible=False, on_click=kontrol)
+    tekrar_btn = ft.Button("TEKRAR OYNA", bgcolor="#ff4757", color="white", width=270, height=48, visible=False, on_click=oyunu_baslat)
 
     s_renk = ["#c0392b", "#1f618d", "#1e8449", "#d68910"]
     satirlar = []
@@ -240,26 +258,39 @@ async def main(page: ft.Page):
             )
             for t in s
         ]
-        satirlar.append(ft.Row(btns, alignment=ft.MainAxisAlignment.CENTER))
+        satirlar.append(ft.Row(btns, alignment=ft.MainAxisAlignment.CENTER, spacing=8))
 
-    page.add(
-        ft.Container(
-            content=ft.Row(
-                [p_btn, ust_txt, altin_txt, ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", on_click=magaza)],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            ),
-            bgcolor="#1e1e3f",
-            padding=8,
-            border_radius=8,
+    ana_kutu = ft.Container(
+        content=ft.Column(
+            [
+                ft.Container(
+                    content=ft.Row(
+                        [p_btn, ust_txt, altin_txt, ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", on_click=magaza)],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    ),
+                    bgcolor="#1e1e3f",
+                    padding=8,
+                    border_radius=10,
+                ),
+                bar,
+                kart_dis,
+                ft.Row([d_btn, s_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
+                msg_txt,
+                ft.Column(satirlar, spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                oyna_btn,
+                gonder_btn,
+                tekrar_btn,
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
+            spacing=8,
         ),
-        bar,
-        kart_dis,
-        ft.Row([d_btn, s_btn], alignment=ft.MainAxisAlignment.CENTER),
-        msg_txt,
-        ft.Column(satirlar, spacing=5),
-        ft.Button("GONDER", bgcolor="#00b894", color="white", width=270, height=46, on_click=kontrol),
-        tekrar_btn,
+        padding=12,
+        alignment=ft.Alignment(0, 0),
     )
+
+    page.add(ft.SafeArea(content=ana_kutu, expand=True))
 
     async def sayac():
         while True:
@@ -284,7 +315,6 @@ async def main(page: ft.Page):
                             yeni_soru()
                 page.update()
 
-    yeni_soru()
     page.run_task(sayac)
 
 ft.run(main)
