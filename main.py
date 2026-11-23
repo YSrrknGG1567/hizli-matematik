@@ -257,7 +257,7 @@ async def main(page: ft.Page):
     tekrar_btn = ft.Button("TEKRAR OYNA", bgcolor="#ff4757", color="white", width=260, height=46, visible=False, on_click=oyunu_baslat)
 
     s_renk = ["#c0392b", "#1f618d", "#1e8449", "#d68910"]
-    satirlar =
+    satirlar = list()
     for r, s in enumerate([["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"], ["-", "0", "SIL"]]):
         btns = [
             ft.Button(
