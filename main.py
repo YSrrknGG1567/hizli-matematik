@@ -1,4 +1,7 @@
-import flet as ft, random, asyncio
+import flet as ft, random, asyncio, json, urllib.request
+
+# Senin gercek online skor tablosu veritabanin
+FIREBASE_URL = "https://hizli-matematik-10492-default-rtdb.europe-west1.firebasedatabase.app"
 
 async def main(page: ft.Page):
     page.title = "Hizli Matematik"
@@ -7,15 +10,109 @@ async def main(page: ft.Page):
 
     uno = ["#e74c3c", "#2980b9", "#27ae60", "#f39c12"]
     d = {
-        "puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 7.0, "max": 7.0,
+        "isim": "Oyuncu", "puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 7.0, "max": 7.0,
         "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0,
         "kombo": 0, "jd": 1, "js": 0, "jc": 0, "girdi": "", "soru": "12 + 8",
-        "simge": "+", "renk": "#e74c3c"
+        "simge": "+", "renk": "#e74c3c", "yerel_skorlar": list()
     }
 
-    ust_txt = ft.Text("Can: 3 | P: 0 | Svy: 1", size=12, weight=ft.FontWeight.BOLD, color="#ff6b81")
-    altin_txt = ft.Text("Altin: 50", size=12, weight=ft.FontWeight.BOLD, color="#ffd32a")
-    bar = ft.ProgressBar(value=1.0, width=300, height=11, color="#00b894", bgcolor="#1e1e3f")
+    def skoru_kaydet_bulut(isim, skor):
+        if skor <= 0:
+            return
+        d["yerel_skorlar"].append({"isim": isim, "skor": skor})
+        d["yerel_skorlar"] = sorted(d["yerel_skorlar"], key=lambda x: x["skor"], reverse=True)[:10]
+        if FIREBASE_URL.startswith("http"):
+            try:
+                url = FIREBASE_URL.rstrip("/") + "/skorlar.json"
+                veri = json.dumps({"isim": isim, "skor": skor}).encode("utf-8")
+                req = urllib.request.Request(url, data=veri, method="POST")
+                urllib.request.urlopen(req, timeout=4)
+            except Exception:
+                pass
+
+    def skorlari_getir():
+        liste = list(d["yerel_skorlar"])
+        if FIREBASE_URL.startswith("http"):
+            try:
+                url = FIREBASE_URL.rstrip("/") + "/skorlar.json"
+                res = urllib.request.urlopen(url, timeout=4).read().decode("utf-8")
+                ham = json.loads(res)
+                if isinstance(ham, dict):
+                    liste = [v for v in ham.values() if isinstance(v, dict) and "isim" in v and "skor" in v]
+            except Exception:
+                pass
+        return sorted(liste, key=lambda x: x["skor"], reverse=True)[:10]
+
+    # --- ANA MENU ELEMANLARI ---
+    menu_rekor_txt = ft.Text(f"EN YUKSEK SKORUN: {d['rekor']}", size=16, weight=ft.FontWeight.BOLD, color="#ffd32a")
+
+    def isim_sor_ac(e=None):
+        isim_input = ft.TextField(
+            label="Name:",
+            hint_text="Adini yaz (Max 20 karakter)",
+            max_length=20,
+            value="" if d["isim"] == "Oyuncu" else d["isim"],
+            autofocus=True,
+            color="white",
+            border_color="#0984e3",
+        )
+        uyari = ft.Text("", color="#ff7675", size=12)
+
+        def onayla(ev=None):
+            girilen = (isim_input.value or "").strip()[:20]
+            if not girilen:
+                uyari.value = "Lutfen bir isim yaz!"
+                page.update()
+                return
+            d["isim"] = girilen
+            page.pop_dialog()
+            ekran_degistir("oyun")
+            oyunu_baslat()
+
+        dlg = ft.AlertDialog(
+            bgcolor="#1e1e3f",
+            title=ft.Text("Oyuncu Adi", color="white"),
+            content=ft.Column([isim_input, uyari], tight=True),
+            actions=[
+                ft.TextButton("Iptal", on_click=lambda _: page.pop_dialog()),
+                ft.Button("Basla", bgcolor="#00b894", color="white", on_click=onayla),
+            ],
+        )
+        page.show_dialog(dlg)
+
+    def skor_tablosu_ac(e=None):
+        kayitlar = skorlari_getir()
+        satir_listesi = list()
+        if not kayitlar:
+            satir_listesi.append(ft.Text("Henuz kayitli skor yok. Ilk rekoru sen kir!", color="#a2a8d3"))
+        else:
+            for idx, item in enumerate(kayitlar, 1):
+                renk = "#ffd32a" if idx == 1 else ("#dfe6e9" if idx == 2 else ("#e17055" if idx == 3 else "white"))
+                satir_listesi.append(
+                    ft.Row(
+                        [
+                            ft.Text(f"{idx}. {item['isim']}", color=renk, weight=ft.FontWeight.BOLD, size=14),
+                            ft.Text(f"{item['skor']} P", color="#00b894", weight=ft.FontWeight.BOLD, size=14),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        width=250,
+                    )
+                )
+        satir_listesi.append(ft.Divider(color="#636e72"))
+        satir_listesi.append(ft.Text("Online Skor Tablosu Aktif", size=11, color="#00b894"))
+
+        dlg = ft.AlertDialog(
+            bgcolor="#1e1e3f",
+            title=ft.Text("Skor Tablosu (Top 10)", color="#ffd32a"),
+            content=ft.Column(satir_listesi, tight=True, spacing=6),
+            actions=[ft.TextButton("Kapat", on_click=lambda _: page.pop_dialog())],
+        )
+        page.show_dialog(dlg)
+
+    # --- OYUN EKRANI ELEMANLARI ---
+    ust_txt = ft.Text("Can:3 P:0 S:1", size=11, weight=ft.FontWeight.BOLD, color="#ff6b81")
+    altin_txt = ft.Text("Altin:50", size=11, weight=ft.FontWeight.BOLD, color="#ffd32a")
+    bar = ft.ProgressBar(value=1.0, width=310, height=11, color="#00b894", bgcolor="#1e1e3f")
     kose1 = ft.Text("?", size=15, weight=ft.FontWeight.BOLD, color="white")
     kose2 = ft.Text("?", size=15, weight=ft.FontWeight.BOLD, color="white")
     soru_txt = ft.Text("HIZLI MAT", size=22, weight=ft.FontWeight.BOLD, color="#121225", text_align=ft.TextAlign.CENTER)
@@ -56,8 +153,9 @@ async def main(page: ft.Page):
     msg_txt = ft.Text("Hazir oldugunda OYNA butonuna bas!", size=13, weight=ft.FontWeight.BOLD, color="#ffd32a", text_align=ft.TextAlign.CENTER)
 
     def guncelle():
-        ust_txt.value = f"Can: {d['can']} | P: {d['puan']} | Svy: {d['svy']}"
-        altin_txt.value = f"Altin: {d['altin']}"
+        ust_txt.value = f"Can:{d['can']} P:{d['puan']} S:{d['svy']}"
+        altin_txt.value = f"Altin:{d['altin']}"
+        menu_rekor_txt.value = f"EN YUKSEK SKORUN: {d['rekor']}"
         d_btn.content = f"Dondur ({d['jd']})"
         s_btn.content = f"+10sn ({d['js']})"
         if d["aktif"]:
@@ -83,6 +181,37 @@ async def main(page: ft.Page):
             kose1.value = d["simge"]
             kose2.value = d["simge"]
         guncelle()
+
+    def geri_tikla(e=None):
+        onceki_dur = d["dur"]
+        d["dur"] = True
+
+        def secim(kaydet_mi):
+            if kaydet_mi:
+                if d["puan"] > d["rekor"]:
+                    d["rekor"] = d["puan"]
+                skoru_kaydet_bulut(d["isim"], d["puan"])
+            d["aktif"] = False
+            d["dur"] = False
+            page.pop_dialog()
+            guncelle()
+            ekran_degistir("menu")
+
+        def vazgec(ev=None):
+            d["dur"] = onceki_dur
+            page.pop_dialog()
+
+        dlg = ft.AlertDialog(
+            bgcolor="#1e1e3f",
+            title=ft.Text("Menuye Don", color="white"),
+            content=ft.Text(f"{d['isim']} - Mevcut Puan: {d['puan']}\nSkorun kaydedilsin mi?", color="#dfe6e9"),
+            actions=[
+                ft.Button("Skoru Kaydet", bgcolor="#00b894", color="white", on_click=lambda _: secim(True)),
+                ft.Button("Kaydetme", bgcolor="#ff4757", color="white", on_click=lambda _: secim(False)),
+                ft.TextButton("Iptal", on_click=vazgec),
+            ],
+        )
+        page.show_dialog(dlg)
 
     def yeni_soru():
         d["aktif"] = True
@@ -112,6 +241,7 @@ async def main(page: ft.Page):
         d["donma"] = 0.0
         if d["puan"] > d["rekor"]:
             d["rekor"] = d["puan"]
+        skoru_kaydet_bulut(d["isim"], d["puan"])
         kart_ic.bgcolor = "#e74c3c"
         soru_txt.value = "OYUN BITTI"
         cevap_txt.value = f"{d['puan']} P"
@@ -195,7 +325,7 @@ async def main(page: ft.Page):
                 ],
                 tight=True,
             ),
-            actions=[ft.TextButton("Oyuna Don", on_click=kapat)],
+            actions=[ft.TextButton("Kapat", on_click=kapat)],
             on_dismiss=kapat,
         )
         page.show_dialog(dlg)
@@ -245,14 +375,20 @@ async def main(page: ft.Page):
         d["can"] = 3 + d["jc"]
         d["svy"] = 1
         d["kombo"] = 0
+        d["dur"] = False
+        p_btn.content = "II"
+        p_btn.bgcolor = "#636e72"
         oyna_btn.visible = False
         tekrar_btn.visible = False
         gonder_btn.visible = True
-        msg_txt.value = f"Basladi! ({d['can']} Can) - Hizli Coz!"
+        msg_txt.value = f"Iyi sanslar {d['isim']}! ({d['can']} Can)"
         msg_txt.color = "#00b894"
         yeni_soru()
 
-    p_btn = ft.Button("II", bgcolor="#636e72", color="white", width=40, on_click=duraklat_degis)
+    geri_btn = ft.Button("<-", bgcolor="#ff4757", color="white", width=42, padding=0, on_click=geri_tikla)
+    p_btn = ft.Button("II", bgcolor="#636e72", color="white", width=36, padding=0, on_click=duraklat_degis)
+    mag_btn = ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", width=76, padding=0, on_click=magaza)
+
     d_btn = ft.Button("Dondur (1)", bgcolor="#0984e3", color="white", on_click=lambda _: joker("d"))
     s_btn = ft.Button("+10sn (0)", bgcolor="#6c5ce7", color="white", on_click=lambda _: joker("s"))
     a_btn = ft.Button("Atla", bgcolor="#e17055", color="white", on_click=lambda _: joker("a"))
@@ -278,37 +414,68 @@ async def main(page: ft.Page):
 
     ust_bar = ft.Container(
         content=ft.Row(
-            [p_btn, ust_txt, altin_txt, ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", on_click=magaza)],
+            [geri_btn, p_btn, ust_txt, altin_txt, mag_btn],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=3,
         ),
         bgcolor="#1e1e3f",
-        padding=8,
+        padding=6,
         border_radius=10,
-        width=320,
+        width=335,
     )
+
+    menu_ekrani = ft.Column(
+        [
+            ft.Container(height=40),
+            ft.Container(
+                content=menu_rekor_txt,
+                bgcolor="#1e1e3f",
+                padding=ft.Padding.symmetric(horizontal=22, vertical=12),
+                border_radius=12,
+            ),
+            ft.Container(height=45),
+            ft.Text("HIZLI MATEMATIK", size=28, weight=ft.FontWeight.BOLD, color="white"),
+            ft.Text("UNO Kartli Zeka Yarisi", size=13, color="#a2a8d3"),
+            ft.Container(height=25),
+            ft.Button("OYNA", bgcolor="#0984e3", color="white", width=240, height=56, on_click=isim_sor_ac),
+            ft.Container(height=10),
+            ft.Button("MAGAZA", bgcolor="#ffd32a", color="#121225", width=240, height=48, on_click=magaza),
+            ft.Container(height=35),
+            ft.Button("SKOR TABLOSU", bgcolor="#6c5ce7", color="white", width=240, height=48, on_click=skor_tablosu_ac),
+        ],
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        visible=True,
+    )
+
+    oyun_ekrani = ft.Column(
+        [
+            ft.Container(height=24),
+            ust_bar,
+            bar,
+            kart_dis,
+            ft.Row([d_btn, s_btn, a_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=6),
+            msg_txt,
+            ft.Column(satirlar, spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            oyna_btn,
+            gonder_btn,
+            tekrar_btn,
+        ],
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        alignment=ft.MainAxisAlignment.CENTER,
+        spacing=8,
+        visible=False,
+    )
+
+    def ekran_degistir(hedef):
+        menu_ekrani.visible = (hedef == "menu")
+        oyun_ekrani.visible = (hedef == "oyun")
+        page.update()
 
     page.add(
         ft.Row(
-            [
-                ft.Column(
-                    [
-                        ft.Container(height=28),
-                        ust_bar,
-                        bar,
-                        kart_dis,
-                        ft.Row([d_btn, s_btn, a_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=6),
-                        msg_txt,
-                        ft.Column(satirlar, spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                        oyna_btn,
-                        gonder_btn,
-                        tekrar_btn,
-                    ],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=8,
-                )
-            ],
+            [ft.Column([menu_ekrani, oyun_ekrani], horizontal_alignment=ft.CrossAxisAlignment.CENTER)],
             alignment=ft.MainAxisAlignment.CENTER,
             expand=True,
         )
