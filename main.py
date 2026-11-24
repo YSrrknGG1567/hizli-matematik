@@ -1,7 +1,7 @@
 import flet as ft, random, asyncio, json, urllib.request
 
 # Senin gercek online skor tablosu veritabanin
-FIREBASE_URL = "https://hizli-matematik-10492-default-rtdb.europe-west1.firebasedatabase.app"
+FIREBASE_URL = "https://firebasedatabase.app"
 
 async def main(page: ft.Page):
     page.title = "Hizli Matematik"
@@ -385,9 +385,9 @@ async def main(page: ft.Page):
         msg_txt.color = "#00b894"
         yeni_soru()
 
-    geri_btn = ft.Button("<-", bgcolor="#ff4757", color="white", width=42, padding=0, on_click=geri_tikla)
-    p_btn = ft.Button("II", bgcolor="#636e72", color="white", width=36, padding=0, on_click=duraklat_degis)
-    mag_btn = ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", width=76, padding=0, on_click=magaza)
+    geri_btn = ft.Button("<-", bgcolor="#ff4757", color="white", width=44, on_click=geri_tikla)
+    p_btn = ft.Button("II", bgcolor="#636e72", color="white", width=40, on_click=duraklat_degis)
+    mag_btn = ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", width=82, on_click=magaza)
 
     d_btn = ft.Button("Dondur (1)", bgcolor="#0984e3", color="white", on_click=lambda _: joker("d"))
     s_btn = ft.Button("+10sn (0)", bgcolor="#6c5ce7", color="white", on_click=lambda _: joker("s"))
@@ -417,12 +417,12 @@ async def main(page: ft.Page):
             [geri_btn, p_btn, ust_txt, altin_txt, mag_btn],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=3,
+            spacing=2,
         ),
         bgcolor="#1e1e3f",
         padding=6,
         border_radius=10,
-        width=335,
+        width=340,
     )
 
     menu_ekrani = ft.Column(
