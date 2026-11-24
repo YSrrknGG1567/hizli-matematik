@@ -1,6 +1,5 @@
 import flet as ft, random, asyncio, json, urllib.request
 
-# Senin gercek online skor tablosu veritabanin
 FIREBASE_URL = "https://firebasedatabase.app"
 
 async def main(page: ft.Page):
@@ -21,29 +20,26 @@ async def main(page: ft.Page):
             return
         d["yerel_skorlar"].append({"isim": isim, "skor": skor})
         d["yerel_skorlar"] = sorted(d["yerel_skorlar"], key=lambda x: x["skor"], reverse=True)[:10]
-        if FIREBASE_URL.startswith("http"):
-            try:
-                url = FIREBASE_URL.rstrip("/") + "/skorlar.json"
-                veri = json.dumps({"isim": isim, "skor": skor}).encode("utf-8")
-                req = urllib.request.Request(url, data=veri, method="POST")
-                urllib.request.urlopen(req, timeout=4)
-            except Exception:
-                pass
+        try:
+            url = FIREBASE_URL + "/skorlar.json"
+            veri = json.dumps({"isim": isim, "skor": skor}).encode("utf-8")
+            req = urllib.request.Request(url, data=veri, method="POST")
+            urllib.request.urlopen(req, timeout=4)
+        except Exception:
+            pass
 
     def skorlari_getir():
         liste = list(d["yerel_skorlar"])
-        if FIREBASE_URL.startswith("http"):
-            try:
-                url = FIREBASE_URL.rstrip("/") + "/skorlar.json"
-                res = urllib.request.urlopen(url, timeout=4).read().decode("utf-8")
-                ham = json.loads(res)
-                if isinstance(ham, dict):
-                    liste = [v for v in ham.values() if isinstance(v, dict) and "isim" in v and "skor" in v]
-            except Exception:
-                pass
+        try:
+            url = FIREBASE_URL + "/skorlar.json"
+            res = urllib.request.urlopen(url, timeout=4).read().decode("utf-8")
+            ham = json.loads(res)
+            if isinstance(ham, dict):
+                liste = [v for v in ham.values() if isinstance(v, dict) and "isim" in v and "skor" in v]
+        except Exception:
+            pass
         return sorted(liste, key=lambda x: x["skor"], reverse=True)[:10]
 
-    # --- ANA MENU ELEMANLARI ---
     menu_rekor_txt = ft.Text(f"EN YUKSEK SKORUN: {d['rekor']}", size=16, weight=ft.FontWeight.BOLD, color="#ffd32a")
 
     def isim_sor_ac(e=None):
@@ -98,7 +94,6 @@ async def main(page: ft.Page):
                         width=250,
                     )
                 )
-        satir_listesi.append(ft.Divider(color="#636e72"))
         satir_listesi.append(ft.Text("Online Skor Tablosu Aktif", size=11, color="#00b894"))
 
         dlg = ft.AlertDialog(
@@ -109,7 +104,6 @@ async def main(page: ft.Page):
         )
         page.show_dialog(dlg)
 
-    # --- OYUN EKRANI ELEMANLARI ---
     ust_txt = ft.Text("Can:3 P:0 S:1", size=11, weight=ft.FontWeight.BOLD, color="#ff6b81")
     altin_txt = ft.Text("Altin:50", size=11, weight=ft.FontWeight.BOLD, color="#ffd32a")
     bar = ft.ProgressBar(value=1.0, width=310, height=11, color="#00b894", bgcolor="#1e1e3f")
@@ -431,7 +425,7 @@ async def main(page: ft.Page):
             ft.Container(
                 content=menu_rekor_txt,
                 bgcolor="#1e1e3f",
-                padding=ft.Padding.symmetric(horizontal=22, vertical=12),
+                padding=14,
                 border_radius=12,
             ),
             ft.Container(height=45),
