@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Hızlı Matematik</title>
+<title>Hızlı Matematik & Bilgi</title>
 <style>
 *{box-sizing:border-box;font-family:Arial,sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:#121225;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
@@ -19,7 +19,7 @@ body{margin:0;background:#121225;color:#fff;display:flex;justify-content:center;
 .soru-kare{background:#fff;border-radius:0;width:242px;min-height:108px;padding:8px;display:flex;flex-direction:column;justify-content:center;align-items:center}
 #soru{color:#121225;font-size:18px;font-weight:bold;word-wrap:break-word;overflow-wrap:break-word;line-height:1.3;max-width:100%}
 .sik-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.sbtn{padding:13px 8px;font-size:15px;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;word-wrap:break-word}
+.sbtn{padding:13px 8px;font-size:14px;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;word-wrap:break-word}
 .sbtn:active{transform:scale(.96)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;padding:12px;z-index:10;overflow-y:auto}
 .mbox{background:#1e1e3f;padding:16px;border-radius:14px;width:332px;text-align:center;position:relative;z-index:12;max-height:92vh;overflow-y:auto}
@@ -38,7 +38,7 @@ input{width:100%;padding:10px;border-radius:8px;border:2px solid #0984e3;backgro
   <div class="box" style="color:#ffd32a;font-weight:bold" id="mRekor">EN YÜKSEK SKORUN: 0</div>
   <div id="profilBilgi" style="font-size:12px;color:#00cec9;margin-bottom:8px"></div>
   <h1 style="margin:18px 0 4px">HIZLI MATEMATİK</h1>
-  <div style="color:#a2a8d3;font-size:13px;margin-bottom:20px">UNO Kartlı Zeka Yarışı</div>
+  <div style="color:#a2a8d3;font-size:13px;margin-bottom:20px">UNO Kartlı Ders & Zeka Yarışı</div>
   <button class="btn" style="background:#0984e3;width:240px;font-size:18px;padding:15px" onclick="oynaTikla()">OYNA</button><br><br>
   <button class="btn" style="background:#ffd32a;color:#121225;width:240px" onclick="magazaAc()">MAĞAZA</button><br><br>
   <button class="btn" style="background:#6c5ce7;width:240px" onclick="skorAc()">SKOR TABLOSU</button><br><br>
@@ -76,27 +76,27 @@ input{width:100%;padding:10px;border-radius:8px;border:2px solid #0984e3;backgro
 
 <script>
 const DB="https://"+"hizli-matematik-10492-default-rtdb"+".europe-west1.firebasedatabase.app/skorlar.json";
-const uno=["#e74c3c","#2980b9","#27ae60","#f39c12"];
-const sikRenk=["#c0392b","#1f618d","#1e8449","#d68910"];
+const uno=new Array("#e74c3c","#2980b9","#27ae60","#f39c12");
+const sikRenk=new Array("#c0392b","#1f618d","#1e8449","#d68910");
 let prof={isim:"",kademe:"Ortaokul",sinif:"6. Sınıf",kayitli:false};
 try{let k=JSON.parse(localStorage.getItem("hm_prof"));if(k&&k.kayitli)prof=k;}catch(e){}
 
-let d={mod:"solo",zorluk:"Orta",ders:"Dört İşlem",puan:0,can:3,svy:1,dc:0,kalan:10,max:10,donma:0,aktif:false,dur:false,altin:50,rekor:0,kombo:0,jd:1,js:0,ja:1,je:1,jc:0,ciftPuan:0,soru:"",simge:"+",renk:"#e74c3c",dogru:0,yanlis:0,bos:0,vsSira:1,vsAtla:3,topSure:0,p1:{},p2:{},magazaAcik:false,siklar:};
+let d={mod:"solo",zorluk:"Orta",ders:"Matematik",puan:0,can:3,svy:1,dc:"",kalan:12,max:12,donma:0,aktif:false,dur:false,altin:50,rekor:0,kombo:0,jd:1,js:0,ja:1,je:1,jc:0,ciftPuan:0,soru:"",simge:"M",renk:"#e74c3c",dogru:0,yanlis:0,bos:0,vsSira:1,vsAtla:3,topSure:0,p1:{},p2:{},magazaAcik:false,siklar:new Array()};
 
 function profYaz(){
   let el=document.getElementById("profilBilgi"),btn=document.getElementById("profDegisBtn");
-  if(prof.kayitli){el.textContent=`👤 ${prof.isim} | ${prof.kademe} - ${prof.sinif}`;btn.style.display="inline-block";}
+  if(prof.kayitli){el.textContent="👤 "+prof.isim+" | "+prof.kademe+" - "+prof.sinif;btn.style.display="inline-block";}
   else{el.textContent="";btn.style.display="none";}
 }
 profYaz();
 
 const cnv=document.getElementById("konfetiCanvas"),ctx=cnv.getContext("2d");
-let parcaciklar=,animId=null;
+let parcaciklar=new Array(),animId=null;
 function konfetiPatlat(){
   if(animId)cancelAnimationFrame(animId);
   cnv.width=window.innerWidth;cnv.height=window.innerHeight;
-  const rnk=["#ff4757","#ffd32a","#00b894","#0984e3","#a29bfe","#ff6b81","#00cec9","#fdcb6e"];
-  parcaciklar=;
+  const rnk=new Array("#ff4757","#ffd32a","#00b894","#0984e3","#a29bfe","#ff6b81","#00cec9","#fdcb6e");
+  parcaciklar=new Array();
   for(let i=0;i<90;i++)parcaciklar.push({x:cnv.width/2+(Math.random()-.5)*140,y:cnv.height-10,vx:(Math.random()-.5)*14,vy:-(Math.random()*15+9),w:Math.random()*9+5,h:Math.random()*6+4,r:Math.random()*360,vr:(Math.random()-.5)*12,c:rnk[Math.floor(Math.random()*rnk.length)],sekil:Math.random()>.4?"kare":"daire"});
   animKonfeti();
 }
@@ -109,7 +109,6 @@ function animKonfeti(){
 
 function modalAc(html){document.getElementById("mContent").innerHTML=html;document.getElementById("modal").style.display="flex";}
 function modalKapat(){d.magazaAcik=false;document.getElementById("modal").style.display="none";}
-
 function oynaTikla(){if(prof.kayitli)modVeDersAc();else profilAc();}
 
 let geciciKad=prof.kademe||"Ortaokul",geciciSin=prof.sinif||"6. Sınıf";
@@ -128,8 +127,8 @@ function profilAc(){
 }
 function kadSec(k){
   geciciKad=k;
-  ["İlkokul","Ortaokul","Lise","Üniversite"].forEach(x=>{let b=document.getElementById("k_"+x);if(b)b.classList.toggle("secili",x===k);});
-  const listeler={"İlkokul":["1. Sınıf","2. Sınıf","3. Sınıf","4. Sınıf"],"Ortaokul":["5. Sınıf","6. Sınıf","7. Sınıf","8. Sınıf"],"Lise":["9. Sınıf","10. Sınıf","11. Sınıf","12. Sınıf"],"Üniversite":["1. Sınıf (Üni)","2. Sınıf (Üni)","3. Sınıf (Üni)","4. Sınıf (Üni)"]};
+  new Array("İlkokul","Ortaokul","Lise","Üniversite").forEach(x=>{let b=document.getElementById("k_"+x);if(b)b.classList.toggle("secili",x===k);});
+  const listeler={"İlkokul":new Array("1. Sınıf","2. Sınıf","3. Sınıf","4. Sınıf"),"Ortaokul":new Array("5. Sınıf","6. Sınıf","7. Sınıf","8. Sınıf"),"Lise":new Array("9. Sınıf","10. Sınıf","11. Sınıf","12. Sınıf"),"Üniversite":new Array("1. Sınıf (Üni)","2. Sınıf (Üni)","3. Sınıf (Üni)","4. Sınıf (Üni)")};
   let arr=listeler[k];if(!arr.includes(geciciSin))geciciSin=arr;
   document.getElementById("sinifAlani").innerHTML=arr.map(s=>`<button class="btn ${geciciSin===s?'secili':''}" style="background:#121225;border:1px solid #0984e3;padding:8px" onclick="sinifSec('${s}')">${s}</button>`).join("");
 }
@@ -142,10 +141,10 @@ function profilKaydet(){
   profYaz();modVeDersAc();
 }
 function dersListesiGetir(){
-  if(prof.kademe=="İlkokul")return [{ad:"Toplama & Çıkarma",r:"#e74c3c"},{ad:"Çarpım Tablosu",r:"#2980b9"},{ad:"Sayı Örüntüleri",r:"#27ae60"},{ad:"Günlük Problemler",r:"#f39c12"}];
-  if(prof.kademe=="Ortaokul")return [{ad:"Tam Sayılar & İşlem",r:"#e74c3c"},{ad:"Denklem & Cebir",r:"#2980b9"},{ad:"Oran & Yüzde",r:"#27ae60"},{ad:"Sayısal Mantık",r:"#f39c12"}];
-  if(prof.kademe=="Lise")return [{ad:"Üslü & Köklü Sayılar",r:"#e74c3c"},{ad:"Fonksiyon & Polinom",r:"#2980b9"},{ad:"Permütasyon & Olasılık",r:"#27ae60"},{ad:"TYT/AYT Mantık",r:"#f39c12"}];
-  return [{ad:"Lineer Cebir & Matris",r:"#e74c3c"},{ad:"Limit & Türev Temeli",r:"#2980b9"},{ad:"İstatistik & Olasılık",r:"#27ae60"},{ad:"ALES / İleri Mantık",r:"#f39c12"}];
+  if(prof.kademe=="İlkokul")return new Array({ad:"Matematik",r:"#e74c3c"},{ad:"Türkçe",r:"#2980b9"},{ad:"Hayat Bilgisi",r:"#27ae60"},{ad:"Zeka & Mantık",r:"#f39c12"});
+  if(prof.kademe=="Ortaokul")return new Array({ad:"Matematik",r:"#e74c3c"},{ad:"Fen Bilimleri",r:"#2980b9"},{ad:"Türkçe",r:"#27ae60"},{ad:"Sosyal Bilgiler",r:"#f39c12"});
+  if(prof.kademe=="Lise")return new Array({ad:"Matematik",r:"#e74c3c"},{ad:"Fizik & Kimya",r:"#2980b9"},{ad:"Tarih & Coğrafya",r:"#27ae60"},{ad:"TYT Mantık",r:"#f39c12"});
+  return new Array({ad:"İleri Matematik",r:"#e74c3c"},{ad:"Bilim & Teknoloji",r:"#2980b9"},{ad:"Genel Kültür & Tarih",r:"#27ae60"},{ad:"ALES Mantık",r:"#f39c12"});
 }
 
 function modVeDersAc(){
@@ -159,7 +158,7 @@ function modVeDersAc(){
       <button class="btn ${d.zorluk=='Zor'?'secili':''}" style="background:#e17055;padding:8px;font-size:12px" onclick="zorSec('Zor')">Zor</button>
       <button class="btn ${d.zorluk=='Çok Zor'?'secili':''}" style="background:#d63031;padding:8px;font-size:12px" onclick="zorSec('Çok Zor')">Çok Zor</button>
     </div>
-    <div style="font-size:12px;color:#00cec9;margin-bottom:4px">DERS KATEGORİSİ SEÇ:</div>
+    <div style="font-size:12px;color:#00cec9;margin-bottom:4px">DERS SEÇ (${prof.kademe}):</div>
     <div class="kat-grid">
       ${dersler.map(x=>`<div class="kat-kare ${d.ders===x.ad?'secili':''}" style="background:${x.r}" onclick="dersSec('${x.ad}')">${x.ad}</div>`).join("")}
     </div>
@@ -202,54 +201,105 @@ async function skorAc(){
 }
 
 function guncelle(){
-  document.getElementById("ustTxt").textContent=`Can:${d.can} P:${d.puan} S:${d.svy}`;
-  document.getElementById("altinTxt").textContent=`Altın:${d.altin}`;
-  document.getElementById("mRekor").textContent=`EN YÜKSEK SKORUN: ${d.rekor}`;
-  document.getElementById("dBtn").textContent=`Dondur (${d.jd})`;
-  document.getElementById("sBtn").textContent=`+10sn (${d.js})`;
-  document.getElementById("eBtn").textContent=`50/50 (${d.je})`;
-  document.getElementById("aBtn").textContent=d.mod=="vs"?`Atla (${d.vsAtla})`:`Atla (${d.ja})`;
+  document.getElementById("ustTxt").textContent="Can:"+d.can+" P:"+d.puan+" S:"+d.svy;
+  document.getElementById("altinTxt").textContent="Altın:"+d.altin;
+  document.getElementById("mRekor").textContent="EN YÜKSEK SKORUN: "+d.rekor;
+  document.getElementById("dBtn").textContent="Dondur ("+d.jd+")";
+  document.getElementById("sBtn").textContent="+10sn ("+d.js+")";
+  document.getElementById("eBtn").textContent="50/50 ("+d.je+")";
+  document.getElementById("aBtn").textContent=d.mod=="vs"?"Atla ("+d.vsAtla+")":"Atla ("+d.ja+")";
+}
+
+function sozelHavuz(){
+  const dr=d.ders;
+  if(dr=="Türkçe")return new Array(
+    {m:"'Kitaplık' kelimesinin kökü nedir?",c:"Kitap",s:new Array("Kitap","Kitapçı","Kıt","Kap")},
+    {m:"Hangisi 'zengin' kelimesinin zıt anlamlısıdır?",c:"Fakir",s:new Array("Fakir","Varlıklı","Cömert","Güçlü")},
+    {m:"'Gözden düşmek' deyimi ne anlama gelir?",c:"Değerini yitirmek",s:new Array("Değerini yitirmek","Uzağı görememek","Ağlamak","Uyumak")},
+    {m:"Aşağıdakilerden hangisi türemiş kelimedir?",c:"Gözlük",s:new Array("Gözlük","Masa","Kalem","Su")},
+    {m:"'Vatan' kelimesinin eş anlamlısı hangisidir?",c:"Yurt",s:new Array("Yurt","Millet","Bayrak","Şehir")}
+  );
+  if(dr=="Hayat Bilgisi")return new Array(
+    {m:"Bir yılda kaç mevsim vardır?",c:"4",s:new Array("4","12","7","3")},
+    {m:"Acil durumlarda tek numara olarak hangisi aranır?",c:"112",s:new Array("112","155","110","182")},
+    {m:"Güneş hangi yönden doğar?",c:"Doğu",s:new Array("Doğu","Batı","Kuzey","Güney")},
+    {m:"Trafik lambasında 'Hazırlan' anlamına gelen renk hangisidir?",c:"Sarı",s:new Array("Sarı","Kırmızı","Yeşil","Mavi")}
+  );
+  if(dr=="Fen Bilimleri")return new Array(
+    {m:"Hücrede enerji üretiminden sorumlu organel hangisidir?",c:"Mitokondri",s:new Array("Mitokondri","Ribozom","Koful","Lizozom")},
+    {m:"Suyun deniz seviyesinde kaynama sıcaklığı kaç °C'dir?",c:"100",s:new Array("100","0","50","80")},
+    {m:"Güneş sistemindeki en büyük gezegen hangisidir?",c:"Jüpiter",s:new Array("Jüpiter","Satürn","Mars","Venüs")},
+    {m:"Ses en hızlı hangi ortamda yayılır?",c:"Katı",s:new Array("Katı","Sıvı","Gaz","Boşluk")}
+  );
+  if(dr=="Sosyal Bilgiler")return new Array(
+    {m:"Türkiye'nin en yüksek dağı hangisidir?",c:"Ağrı Dağı",s:new Array("Ağrı Dağı","Erciyes","Uludağ","Palandöken")},
+    {m:"TBMM hangi tarihte açılmıştır?",c:"23 Nisan 1920",s:new Array("23 Nisan 1920","29 Ekim 1923","19 Mayıs 1919","30 Ağustos 1922")},
+    {m:"İpek Yolu hangi kıtaları birbirine bağlar?",c:"Asya - Avrupa",s:new Array("Asya - Avrupa","Afrika - Amerika","Avrupa - Avustralya","Asya - Afrika")}
+  );
+  if(dr=="Fizik & Kimya")return new Array(
+    {m:"Kuvvetin SI birim sistemindeki birimi nedir?",c:"Newton",s:new Array("Newton","Joule","Watt","Pascal")},
+    {m:"Periyodik tabloda atom numarası 1 olan element hangisidir?",c:"Hidrojen",s:new Array("Hidrojen","Helyum","Oksijen","Karbon")},
+    {m:"Işığın boşluktaki hızı yaklaşık kaç km/sn'dir?",c:"300.000",s:new Array("300.000","150.000","30.000","3.000")},
+    {m:"Sülfürik asidin kimyasal formülü hangisidir?",c:"H2SO4",s:new Array("H2SO4","HCl","NaOH","HNO3")}
+  );
+  if(dr=="Tarih & Coğrafya"||dr=="Genel Kültür & Tarih")return new Array(
+    {m:"İstanbul kaç yılında fethedilmiştir?",c:"1453",s:new Array("1453","1071","1299","1517")},
+    {m:"Dünyanın en uzun nehri hangisidir?",c:"Nil Nehri",s:new Array("Nil Nehri","Amazon","Fırat","Tuna")},
+    {m:"Malazgirt Meydan Muharebesi hangi yılda yapılmıştır?",c:"1071",s:new Array("1071","1453","1176","1402")},
+    {m:"Türkiye'nin yüzölçümü en büyük ili hangisidir?",c:"Konya",s:new Array("Konya","Ankara","Sivas","Erzurum")}
+  );
+  return new Array(
+    {m:"DNA'nın yapı taşını keşfeden bilim insanları kimlerdir?",c:"Watson ve Crick",s:new Array("Watson ve Crick","Newton ve Leibniz","Curie ve Becquerel","Tesla ve Edison")},
+    {m:"İnsan vücudundaki en büyük organ hangisidir?",c:"Deri",s:new Array("Deri","Karaciğer","Akciğer","Beyin")},
+    {m:"Işık yılı neyi ölçmek için kullanılan bir birimdir?",c:"Uzaklık",s:new Array("Uzaklık","Zaman","Hız","Kütle")}
+  );
 }
 
 function soruUret(){
+  const sayisalMi=new Array("Matematik","İleri Matematik","Zeka & Mantık","TYT Mantık","ALES Mantık").includes(d.ders);
+  if(!sayisalMi){
+    let h=sozelHavuz();
+    let q=h[Math.floor(Math.random()*h.length)];
+    let siklar=q.s.slice().sort(()=>Math.random()-.5);
+    return {metin:q.m,cvp:q.c,simge:d.ders.charAt(0),siklar};
+  }
+
   let zTaban={"Kolay":1,"Orta":2,"Zor":3,"Çok Zor":4}[d.zorluk]||2;
   let kTaban={"İlkokul":0,"Ortaokul":1,"Lise":2,"Üniversite":3}[prof.kademe]||1;
-  let guc=zTaban+kTaban+(d.svy-1); // Seviye ve zorluk arttikca guc katlanir, asla 2+2 gelmez!
+  let guc=zTaban+kTaban+(d.svy-1);
   let s1,s2,cvp,metin,simge="M";
 
   if(guc<=2){
     s1=4+Math.floor(Math.random()*12);s2=3+Math.floor(Math.random()*11);
-    if(Math.random()<.5){cvp=s1+s2;metin=`${s1} + ${s2} = ?`;simge="+";}
-    else{cvp=s1*s2;metin=`${s1} x ${s2} = ?`;simge="x";}
+    if(Math.random()<.5){cvp=s1+s2;metin=s1+" + "+s2+" = ?";simge="+";}
+    else{cvp=s1*s2;metin=s1+" x "+s2+" = ?";simge="x";}
   }else if(guc<=4){
     let tip=Math.floor(Math.random()*3);
-    if(tip===0){s1=14+Math.floor(Math.random()*25);s2=12+Math.floor(Math.random()*18);cvp=s1*s2;metin=`${s1} x ${s2} = ?`;simge="x";}
-    else if(tip===1){let a=3+Math.floor(Math.random()*6),x=4+Math.floor(Math.random()*9),b=5+Math.floor(Math.random()*12);cvp=x;metin=`${a}x + ${b} = ${a*x+b} ise x kaçtır?`;}
-    else{let a=2+Math.floor(Math.random()*5),b=3+Math.floor(Math.random()*6);cvp=a*5+b;metin=`Bir sepette ${a*10} ceviz var. Yarısının ${b} fazlası kaçtır?`;}
+    if(tip===0){s1=14+Math.floor(Math.random()*25);s2=12+Math.floor(Math.random()*18);cvp=s1*s2;metin=s1+" x "+s2+" = ?";simge="x";}
+    else if(tip===1){let a=3+Math.floor(Math.random()*6),x=4+Math.floor(Math.random()*9),b=5+Math.floor(Math.random()*12);cvp=x;metin=a+"x + "+b+" = "+(a*x+b)+" ise x kaçtır?";}
+    else{let a=2+Math.floor(Math.random()*5),b=3+Math.floor(Math.random()*6);cvp=a*5+b;metin="Bir sepette "+(a*10)+" ceviz var. Yarısının "+b+" fazlası kaçtır?";}
   }else if(guc<=6){
     let tip=Math.floor(Math.random()*4);
-    if(tip===0){s1=28+Math.floor(Math.random()*45);s2=24+Math.floor(Math.random()*55);cvp=s1*s2;metin=`${s1} x ${s2} işleminin sonucu kaçtır?`;simge="x";}
-    else if(tip===1){let a=5+Math.floor(Math.random()*8),b=3+Math.floor(Math.random()*6);cvp=a*b;metin=`x + y = ${a+b} ve x - y = ${a-b} ise x . y çarpımı kaçtır?`;}
-    else if(tip===2){let n=4+Math.floor(Math.random()*7);cvp=2*n+3;metin=`Ardışık 3 tek sayının toplamı ${3*(2*n+1)} ise en büyük sayı kaçtır?`;}
-    else{let h=60+Math.floor(Math.random()*5)*10,t=2+Math.floor(Math.random()*4);cvp=h*t*2;metin=`Saatte ${h} km hızla ${t} saatte yolun yarısını giden aracın tüm yolu kaç km?`;}
+    if(tip===0){s1=28+Math.floor(Math.random()*45);s2=24+Math.floor(Math.random()*55);cvp=s1*s2;metin=s1+" x "+s2+" işleminin sonucu kaçtır?";simge="x";}
+    else if(tip===1){let a=5+Math.floor(Math.random()*8),b=3+Math.floor(Math.random()*6);cvp=a*b;metin="x + y = "+(a+b)+" ve x - y = "+(a-b)+" ise x . y çarpımı kaçtır?";}
+    else if(tip===2){let n=4+Math.floor(Math.random()*7);cvp=2*n+3;metin="Ardışık 3 tek sayının toplamı "+(3*(2*n+1))+" ise en büyük sayı kaçtır?";}
+    else{let h=60+Math.floor(Math.random()*5)*10,t=2+Math.floor(Math.random()*4);cvp=h*t*2;metin="Saatte "+h+" km hızla "+t+" saatte yolun yarısını giden aracın tüm yolu kaç km?";}
   }else{
-    // SEVIYE 4 / COK ZOR / LISE-UNI AGIR MANTIK PROBLEMLERI
     let tip=Math.floor(Math.random()*4);
-    if(tip===0){s1=45+Math.floor(Math.random()*50);s2=52+Math.floor(Math.random()*45);cvp=s1*s2;metin=`${s1} x ${s2} çarpımının sonucu kaçtır?`;simge="x";}
-    else if(tip===1){let k=3+Math.floor(Math.random()*6);cvp=k*k+1;metin=`f(x) = x² + 1 fonksiyonunda f(${k}) değeri kaçtır?`;}
-    else if(tip===2){let a=4+Math.floor(Math.random()*5);cvp=a*(a-1)/2;metin=`${a} kişilik bir grupta herkes birbiriyle 1 kez tokalaşırsa toplam kaç tokalaşma olur?`;}
-    else{let b=3+Math.floor(Math.random()*5);cvp=b*32-1;metin=`${b-1}, ${b*2-1}, ${b*4-1}, ${b*8-1}, ${b*16-1}, ? Örüntüsünde sıradaki sayı kaçtır?`;}
+    if(tip===0){s1=45+Math.floor(Math.random()*50);s2=52+Math.floor(Math.random()*45);cvp=s1*s2;metin=s1+" x "+s2+" çarpımının sonucu kaçtır?";simge="x";}
+    else if(tip===1){let k=3+Math.floor(Math.random()*6);cvp=k*k+1;metin="f(x) = x² + 1 fonksiyonunda f("+k+") değeri kaçtır?";}
+    else if(tip===2){let a=4+Math.floor(Math.random()*5);cvp=a*(a-1)/2;metin=a+" kişilik bir grupta herkes birbiriyle 1 kez tokalaşırsa toplam kaç tokalaşma olur?";}
+    else{let b=3+Math.floor(Math.random()*5);cvp=b*32-1;metin=(b-1)+", "+(b*2-1)+", "+(b*4-1)+", "+(b*8-1)+", ? Örüntüsünde sıradaki sayı kaçtır?";}
   }
 
-  // ZEKICE YAKLASIM YAPILABILEN A-B-C-D SIKLARI URET
-  let set=new Set([cvp]);
+  let set=new Set(new Array(String(cvp)));
   while(set.size<4){
     let fark=(Math.floor(Math.random()*4)+1)*(Math.abs(cvp)>100?10:2);
     let aday=cvp+(Math.random()<.5?fark:-fark);
-    if(aday!==cvp&&aday>=0)set.add(aday);
+    if(aday!==cvp&&aday>=0)set.add(String(aday));
   }
   let arr=Array.from(set).sort(()=>Math.random()-.5);
-  return {metin,cvp,simge,siklar:arr};
+  return {metin,cvp:String(cvp),simge,siklar:arr};
 }
 
 function yeniSoru(){
@@ -264,30 +314,30 @@ function yeniSoru(){
   d.renk=uno[Math.floor(Math.random()*4)];
 
   let sEl=document.getElementById("soru");
-  sEl.style.fontSize=q.metin.length>55?"14px":(q.metin.length>30?"16px":"21px");
+  sEl.style.fontSize=q.metin.length>55?"14px":(q.metin.length>30?"16px":"20px");
   document.getElementById("card").style.background=d.renk;
-  document.getElementById("dersEtiket").textContent=`${d.ders} • ${d.zorluk}`;
+  document.getElementById("dersEtiket").textContent=d.ders+" • "+d.zorluk;
   sEl.textContent=d.soru;
   document.getElementById("k1").textContent=document.getElementById("k2").textContent=d.simge;
 
-  const harfler=["A","B","C","D"];
-  document.getElementById("sikGrid").innerHTML=d.siklar.map((val,i)=>`<button class="sbtn" id="sik_${i}" style="background:${sikRenk[i]}" onclick="sikSec(${val},${i})">${harfler[i]}) ${val}</button>`).join("");
+  const harfler=new Array("A","B","C","D");
+  document.getElementById("sikGrid").innerHTML=d.siklar.map((val,i)=>`<button class="sbtn" id="sik_${i}" style="background:${sikRenk[i]}" onclick="sikSec(${i})">${harfler[i]}) ${val}</button>`).join("");
   guncelle();
 }
 
-function sikSec(val,idx){
+function sikSec(idx){
   if(!d.aktif||d.dur||d.can<=0)return;
-  if(val===d.dc){
+  if(d.siklar[idx]===d.dc){
     d.topSure+=(d.max-d.kalan);d.dogru++;d.kombo++;
     let carpan=d.ciftPuan>0?2:1;if(d.ciftPuan>0)d.ciftPuan--;
     let k=(10+(d.kombo-1)*2)*carpan;
     d.puan+=k;if(d.mod=="solo")d.altin+=10*carpan;
-    document.getElementById("msg").textContent=`Doğru! +${k} Puan${carpan==2?' (2X BONUS!)':''}`;
+    document.getElementById("msg").textContent="Doğru! +"+k+" Puan"+(carpan==2?" (2X BONUS!)":"");
     yeniSoru();
   }else{
     d.yanlis++;d.can--;d.kombo=0;
-    if(d.can<=0)bitti(`Doğru şık: ${d.dc}`);
-    else{document.getElementById("msg").textContent=`Yanlış! Doğrusu: ${d.dc}`;yeniSoru();}
+    if(d.can<=0)bitti("Doğru şık: "+d.dc);
+    else{document.getElementById("msg").textContent="Yanlış! Doğrusu: "+d.dc;yeniSoru();}
   }
 }
 
@@ -297,16 +347,16 @@ function baslat(){
   document.getElementById("pBtn").textContent="II";document.getElementById("tBtn").style.display="none";
   if(d.mod=="vs"){
     d.can=3;d.vsAtla=3;
-    ["dBtn","sBtn","eBtn","magBtn"].forEach(id=>document.getElementById(id).style.display="none");
+    new Array("dBtn","sBtn","eBtn","magBtn").forEach(id=>document.getElementById(id).style.display="none");
     let aktifAd=d.vsSira==1?d.p1.isim:d.p2.isim;
     document.getElementById("vsBanner").style.display="block";
-    document.getElementById("vsBanner").textContent=`1v1 VS (15sn) | Sıra: ${aktifAd} (${d.vsSira}/2)`;
-    document.getElementById("msg").textContent=`${aktifAd} Başladı! (3 Can | 3 Atla)`;
+    document.getElementById("vsBanner").textContent="1v1 VS (15sn) | Sıra: "+aktifAd+" ("+d.vsSira+"/2)";
+    document.getElementById("msg").textContent=aktifAd+" Başladı! (3 Can | 3 Atla)";
   }else{
     d.can=3+d.jc;
-    ["dBtn","sBtn","eBtn","magBtn"].forEach(id=>document.getElementById(id).style.display="inline-block");
+    new Array("dBtn","sBtn","eBtn","magBtn").forEach(id=>document.getElementById(id).style.display="inline-block");
     document.getElementById("vsBanner").style.display="none";
-    document.getElementById("msg").textContent=`İyi şanslar ${prof.isim}!`;
+    document.getElementById("msg").textContent="İyi şanslar "+prof.isim+"!";
   }
   yeniSoru();
 }
@@ -317,7 +367,7 @@ function bitti(sebep){
   document.getElementById("sikGrid").innerHTML="";
   document.getElementById("card").style.background="#e74c3c";
   document.getElementById("soru").style.fontSize="20px";
-  document.getElementById("soru").textContent=`OYUN BİTTİ\n${d.puan} PUAN`;
+  document.getElementById("soru").textContent="OYUN BİTTİ\n"+d.puan+" PUAN";
   if(d.mod=="vs"){
     let ort=d.dogru>0?(d.topSure/d.dogru):99;
     if(d.vsSira==1){
@@ -329,7 +379,7 @@ function bitti(sebep){
       let hizNot="";
       if(d.p1.ortSure<90&&d.p2.ortSure<90&&Math.abs(d.p1.ortSure-d.p2.ortSure)>0.1){
         let hizli=d.p1.ortSure<d.p2.ortSure?d.p1:d.p2,yavas=d.p1.ortSure<d.p2.ortSure?d.p2:d.p1;
-        let hediyeler=[["Zaman Dondurucu (5sn)",()=>d.jd++],["+10 Saniye Jokeri",()=>d.js++],["50/50 Şık Eleme",()=>d.je++],["Soru Atla Jokeri",()=>d.ja++]];
+        let hediyeler=new Array(new Array("Zaman Dondurucu (5sn)",()=>d.jd++),new Array("+10 Saniye Jokeri",()=>d.js++),new Array("50/50 Şık Eleme",()=>d.je++),new Array("Soru Atla Jokeri",()=>d.ja++));
         let secilen=hediyeler[Math.floor(Math.random()*hediyeler.length)];secilen();
         yavas.puan=Math.max(0,yavas.puan-10);
         hizNot=`<div style="background:#0984e333;padding:6px;border-radius:8px;font-size:11px;margin-bottom:8px">⚡ En Hızlı: <b>${hizli.isim}</b> (${hizli.ortSure.toFixed(1)}sn) -> Bedava <b>${secilen}</b>!<br>🐢 En Yavaş: <b>${yavas.isim}</b> (${yavas.ortSure.toFixed(1)}sn) -> <b>-10 Skor</b></div>`;
@@ -348,8 +398,8 @@ function bitti(sebep){
   }else{
     let kayipSayisi=d.yanlis+d.bos,ceza=kayipSayisi>d.dogru?10:0,finalSkor=Math.max(0,d.puan-ceza);
     if(finalSkor>d.rekor)d.rekor=finalSkor;skorKaydet(prof.isim,finalSkor);
-    document.getElementById("msg").textContent=`${sebep} | Ulaşılan: Seviye ${d.svy}`;
-    let cezaSatir=ceza>0?`<br><span style="color:#ff4757">Kayıp Soru Fazla (${kayipSayisi}>${d.dogru}): -10 Ceza -> Net: <b>${finalSkor} P</b></span>`:"";
+    document.getElementById("msg").textContent=sebep+" | Ulaşılan: Seviye "+d.svy;
+    let cezaSatir=ceza>0?`<br><span style="color:#ff4757">Kayıp Soru Fazla (${kayipSayisi} > ${d.dogru}): -10 Ceza -> Net: <b>${finalSkor} P</b></span>`:"";
     let k=document.getElementById("karneKutu");k.style.display="block";
     k.innerHTML=`<b>SONUÇ TABLOSU (Seviye ${d.svy})</b><br>Skor: <b style="color:#ffd32a">${d.puan} P</b> | <span style="color:#00b894">Doğru: ${d.dogru}</span> | <span style="color:#ff7675">Yanlış: ${d.yanlis}</span> | <span style="color:#fdcb6e">Boş: ${d.bos}</span>${cezaSatir}`;
   }
@@ -358,7 +408,7 @@ function bitti(sebep){
 
 function joker(t){
   if(!d.aktif||d.dur||d.can<=0)return;
-  if(t=="d"&&d.jd>0){d.jd--;d.donma+=5;document.getElementById("msg").textContent="Zaman Dondu! (5s)";guncelle();}
+  if(t=="d"&&d.jd>0){d.jd--;d.donma+=5;document.getElementById("msg").textContent="ZAMAN DONDU! (5s)";guncelle();}
   else if(t=="s"&&d.js>0){d.js--;d.kalan+=10;d.max=Math.max(d.max,d.kalan);document.getElementById("msg").textContent="+10sn Eklendi!";guncelle();}
   else if(t=="e"&&d.je>0){
     d.je--;let silinen=0;
@@ -367,7 +417,7 @@ function joker(t){
   }else if(t=="a"){
     if(d.mod=="vs"){if(d.vsAtla<=0){document.getElementById("msg").textContent="VS Atla hakkın bitti!";return;}d.vsAtla--;}
     else{if(d.ja<=0){document.getElementById("msg").textContent="Atla hakkın bitti! Mağazadan al (70 Altın)";return;}d.ja--;}
-    d.bos++;document.getElementById("msg").textContent=`Atlandı! (Doğrusu: ${d.dc})`;yeniSoru();
+    d.bos++;document.getElementById("msg").textContent="Atlandı! (Doğrusu: "+d.dc+")";yeniSoru();
   }else document.getElementById("msg").textContent="Joker kalmadı! Mağazadan al";
 }
 
