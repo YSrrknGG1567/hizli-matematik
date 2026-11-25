@@ -1,6 +1,7 @@
 import flet as ft, random, asyncio, json, urllib.request
 
-FIREBASE_URL = "https://firebasedatabase.app"
+# Senin gercek Firebase veritabanin (Asla kisalmayacak sekilde birlestirildi)
+FIREBASE_URL = "https://" + "hizli-matematik-10492-default-rtdb" + ".europe-west1.firebasedatabase.app"
 
 async def main(page: ft.Page):
     page.title = "Hizli Matematik"
@@ -12,7 +13,7 @@ async def main(page: ft.Page):
         "isim": "Oyuncu", "puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 7.0, "max": 7.0,
         "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0,
         "kombo": 0, "jd": 1, "js": 0, "jc": 0, "girdi": "", "soru": "12 + 8",
-        "simge": "+", "renk": "#e74c3c", "yerel_skorlar": list()
+        "simge": "+", "renk": "#e74c3c", "yerel_skorlar": list(), "online_ok": False
     }
 
     def skoru_kaydet_bulut(isim, skor):
@@ -23,21 +24,30 @@ async def main(page: ft.Page):
         try:
             url = FIREBASE_URL + "/skorlar.json"
             veri = json.dumps({"isim": isim, "skor": skor}).encode("utf-8")
-            req = urllib.request.Request(url, data=veri, method="POST")
-            urllib.request.urlopen(req, timeout=4)
+            req = urllib.request.Request(url, data=veri, headers={"Content-Type": "application/json"}, method="POST")
+            urllib.request.urlopen(req, timeout=6)
+            d["online_ok"] = True
         except Exception:
-            pass
+            d["online_ok"] = False
 
     def skorlari_getir():
         liste = list(d["yerel_skorlar"])
         try:
             url = FIREBASE_URL + "/skorlar.json"
-            res = urllib.request.urlopen(url, timeout=4).read().decode("utf-8")
+            res = urllib.request.urlopen(url, timeout=6).read().decode("utf-8")
             ham = json.loads(res)
+            d["online_ok"] = True
             if isinstance(ham, dict):
-                liste = [v for v in ham.values() if isinstance(v, dict) and "isim" in v and "skor" in v]
+                en_iyiler = {}
+                for v in ham.values():
+                    if isinstance(v, dict) and "isim" in v and "skor" in v:
+                        ad = str(v["isim"])
+                        sk = int(v["skor"])
+                        if ad not in en_iyiler or sk > en_iyiler[ad]:
+                            en_iyiler[ad] = sk
+                liste = [{"isim": k, "skor": v} for k, v in en_iyiler.items()]
         except Exception:
-            pass
+            d["online_ok"] = False
         return sorted(liste, key=lambda x: x["skor"], reverse=True)[:10]
 
     menu_rekor_txt = ft.Text(f"EN YUKSEK SKORUN: {d['rekor']}", size=16, weight=ft.FontWeight.BOLD, color="#ffd32a")
@@ -94,7 +104,9 @@ async def main(page: ft.Page):
                         width=250,
                     )
                 )
-        satir_listesi.append(ft.Text("Online Skor Tablosu Aktif", size=11, color="#00b894"))
+        durum_yazi = "Online Bulut Bagli" if d["online_ok"] else "Baglanti Hatasi (Interneti Kontrol Et)"
+        durum_renk = "#00b894" if d["online_ok"] else "#ff7675"
+        satir_listesi.append(ft.Text(durum_yazi, size=11, color=durum_renk))
 
         dlg = ft.AlertDialog(
             bgcolor="#1e1e3f",
