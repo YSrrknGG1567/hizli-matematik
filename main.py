@@ -185,11 +185,11 @@ async def main(page: ft.Page):
 
     def ders_listesi_getir():
         k = prof["kademe"]
-        if k == "Ilkokul":
+        if "Ilk" in k:
             return (("Matematik", "#e74c3c"), ("Turkce", "#2980b9"), ("Hayat Bilgisi", "#27ae60"), ("Zeka & Mantik", "#f39c12"))
-        elif k == "Ortaokul":
+        elif "Orta" in k:
             return (("Matematik", "#e74c3c"), ("Fen Bilimleri", "#2980b9"), ("Turkce", "#27ae60"), ("Sosyal Bilgiler", "#f39c12"))
-        elif k == "Lise":
+        elif "Lise" in k:
             return (("Matematik", "#e74c3c"), ("Fizik & Kimya", "#2980b9"), ("Tarih & Cografya", "#27ae60"), ("TYT Mantik", "#f39c12"))
         return (("Ileri Matematik", "#e74c3c"), ("Bilim & Teknoloji", "#2980b9"), ("Genel Kultur & Tarih", "#27ae60"), ("ALES Mantik", "#f39c12"))
 
@@ -220,12 +220,12 @@ async def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         kat_row1 = ft.Row([
-            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
-            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
+            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
+            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
         kat_row2 = ft.Row([
-            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
-            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
+            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
+            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         dlg = ft.AlertDialog(
