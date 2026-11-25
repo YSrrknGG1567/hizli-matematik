@@ -3,7 +3,7 @@ import flet as ft, random, asyncio, json, urllib.request, gc
 FIREBASE_URL = "https://" + "hizli-matematik-10492-default-rtdb" + ".europe-west1.firebasedatabase.app"
 
 async def main(page: ft.Page):
-    page.title = "Hizli Matematik"
+    page.title = "Hizli Matematik & Bilgi"
     page.bgcolor = "#121225"
     page.padding = 0
 
@@ -20,11 +20,11 @@ async def main(page: ft.Page):
         pass
 
     d = {
-        "mod": "solo", "zorluk": "Orta", "ders": "Tam Sayilar & Islem",
-        "puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 12.0, "max": 12.0,
+        "mod": "solo", "zorluk": "Orta", "ders": "Matematik",
+        "puan": 0, "can": 3, "svy": 1, "dc": "", "kalan": 12.0, "max": 12.0,
         "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0,
         "kombo": 0, "jd": 1, "js": 0, "ja": 1, "je": 1, "jc": 0, "cift_puan": 0,
-        "soru": "12 + 8 = ?", "simge": "+", "renk": "#e74c3c",
+        "soru": "12 + 8 = ?", "simge": "M", "renk": "#e74c3c",
         "yerel_skorlar": list(), "online_ok": False,
         "dogru": 0, "yanlis": 0, "bos": 0, "top_sure": 0.0,
         "vs_sira": 1, "vs_atla": 3, "p1": dict(), "p2": dict(),
@@ -125,11 +125,11 @@ async def main(page: ft.Page):
 
         def sinif_yenile():
             sinif_kolon.controls.clear()
-            liste = sinif_haritasi[secili_kad[0]]
-            if secili_sin[0] not in liste:
-                secili_sin[0] = liste[0]
+            liste = sinif_haritasi[secili_kad]
+            if secili_sin not in liste:
+                secili_sin = liste
             for s in liste:
-                aktif_mi = (secili_sin[0] == s)
+                aktif_mi = (secili_sin == s)
                 sinif_kolon.controls.append(
                     ft.Button(
                         s,
@@ -141,7 +141,7 @@ async def main(page: ft.Page):
                 )
 
         def kad_sec(k):
-            secili_kad[0] = k
+            secili_kad = k
             sinif_yenile()
             page.update()
 
@@ -160,7 +160,7 @@ async def main(page: ft.Page):
                 uyari_txt.value = "Lutfen adini yaz!"
                 page.update()
                 return
-            prof.update({"isim": ad, "kademe": secili_kad[0], "sinif": secili_sin[0], "kayitli": True})
+            prof.update({"isim": ad, "kademe": secili_kad, "sinif": secili_sin, "kayitli": True})
             try:
                 await page.client_storage.set_async("hm_prof", prof)
             except Exception:
@@ -186,17 +186,17 @@ async def main(page: ft.Page):
     def ders_listesi_getir():
         k = prof["kademe"]
         if k == "Ilkokul":
-            return (("Toplama & Cikarma", "#e74c3c"), ("Carpim Tablosu", "#2980b9"), ("Sayi Oruntuleri", "#27ae60"), ("Gunluk Problemler", "#f39c12"))
+            return (("Matematik", "#e74c3c"), ("Turkce", "#2980b9"), ("Hayat Bilgisi", "#27ae60"), ("Zeka & Mantik", "#f39c12"))
         elif k == "Ortaokul":
-            return (("Tam Sayilar & Islem", "#e74c3c"), ("Denklem & Cebir", "#2980b9"), ("Oran & Yuzde", "#27ae60"), ("Sayisal Mantik", "#f39c12"))
+            return (("Matematik", "#e74c3c"), ("Fen Bilimleri", "#2980b9"), ("Turkce", "#27ae60"), ("Sosyal Bilgiler", "#f39c12"))
         elif k == "Lise":
-            return (("Uslu & Koklu Sayilar", "#e74c3c"), ("Fonksiyon & Polinom", "#2980b9"), ("Permutasyon & Olasilik", "#27ae60"), ("TYT / AYT Mantik", "#f39c12"))
-        return (("Lineer Cebir & Matris", "#e74c3c"), ("Limit & Turev Temeli", "#2980b9"), ("Istatistik & Olasilik", "#27ae60"), ("ALES / Ileri Mantik", "#f39c12"))
+            return (("Matematik", "#e74c3c"), ("Fizik & Kimya", "#2980b9"), ("Tarih & Cografya", "#27ae60"), ("TYT Mantik", "#f39c12"))
+        return (("Ileri Matematik", "#e74c3c"), ("Bilim & Teknoloji", "#2980b9"), ("Genel Kultur & Tarih", "#27ae60"), ("ALES Mantik", "#f39c12"))
 
     def mod_ve_ders_ac():
         dersler = ders_listesi_getir()
-        if not any(x[0] == d["ders"] for x in dersler):
-            d["ders"] = dersler[0][0]
+        if not any(x == d["ders"] for x in dersler):
+            d["ders"] = dersler
 
         durum_txt = ft.Text(f"Mod: {d['zorluk']} | Ders: {d['ders']}", size=11, color="#ffd32a", weight=ft.FontWeight.BOLD)
 
@@ -220,12 +220,12 @@ async def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         kat_row1 = ft.Row([
-            ft.Container(content=ft.Text(dersler[0][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[0][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[0][0])),
-            ft.Container(content=ft.Text(dersler[1][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[1][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[1][0])),
+            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
+            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
         kat_row2 = ft.Row([
-            ft.Container(content=ft.Text(dersler[2][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[2][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[2][0])),
-            ft.Container(content=ft.Text(dersler[3][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[3][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[3][0])),
+            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
+            ft.Container(content=ft.Text(dersler, size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler, width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler)),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         dlg = ft.AlertDialog(
@@ -235,7 +235,7 @@ async def main(page: ft.Page):
                 durum_txt,
                 ft.Text("MODLAR:", size=11, color="#a2a8d3"),
                 zor_row1, zor_row2,
-                ft.Text("DERS KATEGORISI:", size=11, color="#a2a8d3"),
+                ft.Text("DERS SEC:", size=11, color="#a2a8d3"),
                 kat_row1, kat_row2,
                 ft.Row([
                     ft.Button("Tek Kisilik", bgcolor="#0984e3", color="white", width=116, on_click=lambda _: (page.pop_dialog(), oyun_basla_mod("solo"))),
@@ -351,8 +351,8 @@ async def main(page: ft.Page):
         )
     sik_kolon = ft.Column(
         [
-            ft.Row([sik_butonlar[0], sik_butonlar[1]], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
-            ft.Row([sik_butonlar[2], sik_butonlar[3]], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
+            ft.Row([sik_butonlar, sik_butonlar], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
+            ft.Row([sik_butonlar, sik_butonlar], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
         ],
         spacing=8,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -426,7 +426,63 @@ async def main(page: ft.Page):
             )
         page.show_dialog(dlg)
 
+    def sozel_havuz():
+        dr = d["ders"]
+        if dr == "Turkce":
+            return (
+                ("'Kitaplik' kelimesinin koku nedir?", "Kitap", ("Kitap", "Kitapci", "Kit", "Kap")),
+                ("Hangisi 'zengin' kelimesinin zit anlamlisidir?", "Fakir", ("Fakir", "Varlikli", "Comert", "Guclu")),
+                ("'Gozden dusmek' deyimi ne anlama gelir?", "Degerini yitirmek", ("Degerini yitirmek", "Uzagi gorememek", "Aglamak", "Uyumak")),
+                ("Asagidakilerden hangisi turemis kelimedir?", "Gozluk", ("Gozluk", "Masa", "Kalem", "Su")),
+                ("'Vatan' kelimesinin es anlamlisi hangisidir?", "Yurt", ("Yurt", "Millet", "Bayrak", "Sehir")),
+            )
+        if dr == "Hayat Bilgisi":
+            return (
+                ("Bir yilda kac mevsim vardir?", "4", ("4", "12", "7", "3")),
+                ("Acil durumlarda tek numara olarak hangisi aranir?", "112", ("112", "155", "110", "182")),
+                ("Gunes hangi yonden dogar?", "Dogu", ("Dogu", "Bati", "Kuzey", "Guney")),
+                ("Trafik lambasinda 'Hazirlan' anlamina gelen renk hangisidir?", "Sari", ("Sari", "Kirmizi", "Yesil", "Mavi")),
+            )
+        if dr == "Fen Bilimleri":
+            return (
+                ("Hucrede enerji uretiminden sorumlu organel hangisidir?", "Mitokondri", ("Mitokondri", "Ribozom", "Koful", "Lizozom")),
+                ("Suyun deniz seviyesinde kaynama sicakligi kac C'dir?", "100", ("100", "0", "50", "80")),
+                ("Gunes sistemindeki en buyuk gezegen hangisidir?", "Jupiter", ("Jupiter", "Saturn", "Mars", "Venus")),
+                ("Ses en hizli hangi ortamda yayilir?", "Kati", ("Kati", "Sivi", "Gaz", "Bosluk")),
+            )
+        if dr == "Sosyal Bilgiler":
+            return (
+                ("Turkiye'nin en yuksek dagi hangisidir?", "Agri Dagi", ("Agri Dagi", "Erciyes", "Uludag", "Palandoken")),
+                ("TBMM hangi tarihte acilmistir?", "23 Nisan 1920", ("23 Nisan 1920", "29 Ekim 1923", "19 Mayis 1919", "30 Agustos 1922")),
+                ("Ipek Yolu hangi kitalari birbirine baglar?", "Asya - Avrupa", ("Asya - Avrupa", "Afrika - Amerika", "Avrupa - Avustralya", "Asya - Afrika")),
+            )
+        if dr == "Fizik & Kimya":
+            return (
+                ("Kuvvetin SI birim sistemindeki birimi nedir?", "Newton", ("Newton", "Joule", "Watt", "Pascal")),
+                ("Periyodik tabloda atom numarasi 1 olan element hangisidir?", "Hidrojen", ("Hidrojen", "Helyum", "Oksijen", "Karbon")),
+                ("Isigin bosluktaki hizi yaklasik kac km/sn'dir?", "300.000", ("300.000", "150.000", "30.000", "3.000")),
+                ("Sulfurik asidin kimyasal formulu hangisidir?", "H2SO4", ("H2SO4", "HCl", "NaOH", "HNO3")),
+            )
+        if dr in ("Tarih & Cografya", "Genel Kultur & Tarih"):
+            return (
+                ("Istanbul kac yilinda fethedilmistir?", "1453", ("1453", "1071", "1299", "1517")),
+                ("Dunyanin en uzun nehri hangisidir?", "Nil Nehri", ("Nil Nehri", "Amazon", "Firat", "Tuna")),
+                ("Malazgirt Meydan Muharebesi hangi yilda yapilmistir?", "1071", ("1071", "1453", "1176", "1402")),
+                ("Turkiye'nin yuzolcumu en buyuk ili hangisidir?", "Konya", ("Konya", "Ankara", "Sivas", "Erzurum")),
+            )
+        return (
+            ("DNA'nin yapi tasini kesfeden bilim insanlari kimlerdir?", "Watson ve Crick", ("Watson ve Crick", "Newton ve Leibniz", "Curie ve Becquerel", "Tesla ve Edison")),
+            ("Insan vucudundaki en buyuk organ hangisidir?", "Deri", ("Deri", "Karaciger", "Akciger", "Beyin")),
+            ("Isik yili neyi olcmek icin kullanilan bir birimdir?", "Uzaklik", ("Uzaklik", "Zaman", "Hiz", "Kutle")),
+        )
+
     def soru_uret():
+        if d["ders"] not in ("Matematik", "Ileri Matematik", "Zeka & Mantik", "TYT Mantik", "ALES Mantik"):
+            q = random.choice(sozel_havuz())
+            siklar = list(q)
+            random.shuffle(siklar)
+            return q, q, d["ders"], siklar
+
         z_taban = {"Kolay": 1, "Orta": 2, "Zor": 3, "Cok Zor": 4}.get(d["zorluk"], 2)
         k_taban = {"Ilkokul": 0, "Ortaokul": 1, "Lise": 2, "Universite": 3}.get(prof["kademe"], 1)
         guc = z_taban + k_taban + (d["svy"] - 1)
@@ -478,15 +534,15 @@ async def main(page: ft.Page):
                 b = random.randint(3, 7)
                 cvp, metin = b * 32 - 1, f"{b - 1}, {b * 2 - 1}, {b * 4 - 1}, {b * 8 - 1}, ? Oruntude siradaki sayi kactir?"
 
-        sik_set = {cvp}
+        sik_set = {str(cvp)}
         while len(sik_set) < 4:
             fark = random.randint(1, 4) * (10 if abs(cvp) > 100 else 2)
             aday = cvp + (fark if random.random() < 0.5 else -fark)
             if aday != cvp and aday >= 0:
-                sik_set.add(aday)
+                sik_set.add(str(aday))
         siklar = list(sik_set)
         random.shuffle(siklar)
-        return metin, cvp, simge, siklar
+        return metin, str(cvp), simge, siklar
 
     def yeni_soru():
         d["aktif"] = True
@@ -504,7 +560,7 @@ async def main(page: ft.Page):
         d["dc"], d["simge"], d["soru"], d["siklar"] = cvp, simge, metin, siklar
         d["renk"] = random.choice(uno)
 
-        soru_txt.size = 13 if len(metin) > 55 else (15 if len(metin) > 30 else 20)
+        soru_txt.size = 13 if len(metin) > 55 else (15 if len(metin) > 30 else 19)
         kart_ic.bgcolor = d["renk"]
         ders_etiket.value = f"{d['ders']} | {d['zorluk']}"
         soru_txt.value = d["soru"]
@@ -520,8 +576,7 @@ async def main(page: ft.Page):
     def sik_sec(idx):
         if not d["aktif"] or d["dur"] or d["can"] <= 0:
             return
-        secilen = d["siklar"][idx]
-        if secilen == d["dc"]:
+        if d["siklar"][idx] == d["dc"]:
             d["top_sure"] += (d["max"] - d["kalan"])
             d["dogru"] += 1
             d["kombo"] += 1
@@ -809,7 +864,7 @@ async def main(page: ft.Page):
         prof_bilgi_txt,
         ft.Container(height=30),
         ft.Text("HIZLI MATEMATIK", size=28, weight=ft.FontWeight.BOLD, color="white"),
-        ft.Text("UNO Kartli Zeka Yarisi", size=13, color="#a2a8d3"),
+        ft.Text("UNO Kartli Ders & Zeka Yarisi", size=13, color="#a2a8d3"),
         ft.Container(height=20),
         ft.Button("OYNA", bgcolor="#0984e3", color="white", width=240, height=56, on_click=oyna_tikla),
         ft.Container(height=8),
