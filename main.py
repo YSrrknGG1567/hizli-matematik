@@ -8,14 +8,27 @@ async def main(page: ft.Page):
     page.padding = 0
 
     uno = ("#e74c3c", "#2980b9", "#27ae60", "#f39c12")
+    sik_renk = ("#c0392b", "#1f618d", "#1e8449", "#d68910")
+    harfler = ("A", "B", "C", "D")
+
+    prof = {"isim": "", "kademe": "Ortaokul", "sinif": "6. Sinif", "kayitli": False}
+    try:
+        kayitli_prof = await page.client_storage.get_async("hm_prof")
+        if isinstance(kayitli_prof, dict) and kayitli_prof.get("kayitli"):
+            prof.update(kayitli_prof)
+    except Exception:
+        pass
+
     d = {
-        "mod": "solo", "isim": "Oyuncu", "puan": 0, "can": 3, "svy": 1, "dc": 0,
-        "kalan": 7.0, "max": 7.0, "donma": 0.0, "aktif": False, "dur": False,
-        "altin": 50, "rekor": 0, "kombo": 0, "jd": 1, "js": 0, "ja": 1, "jc": 0,
-        "girdi": "", "soru": "12 + 8", "simge": "+", "renk": "#e74c3c",
+        "mod": "solo", "zorluk": "Orta", "ders": "Tam Sayilar & Islem",
+        "puan": 0, "can": 3, "svy": 1, "dc": 0, "kalan": 12.0, "max": 12.0,
+        "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0,
+        "kombo": 0, "jd": 1, "js": 0, "ja": 1, "je": 1, "jc": 0, "cift_puan": 0,
+        "soru": "12 + 8 = ?", "simge": "+", "renk": "#e74c3c",
         "yerel_skorlar": list(), "online_ok": False,
         "dogru": 0, "yanlis": 0, "bos": 0, "top_sure": 0.0,
-        "vs_sira": 1, "vs_atla": 3, "p1": dict(), "p2": dict(), "soru_sayac": 0
+        "vs_sira": 1, "vs_atla": 3, "p1": dict(), "p2": dict(),
+        "soru_sayac": 0, "siklar": list()
     }
 
     konfeti_katman = ft.Stack(width=360, height=640)
@@ -84,52 +97,162 @@ async def main(page: ft.Page):
         return sorted(liste, key=lambda x: x["skor"], reverse=True)[:10]
 
     menu_rekor_txt = ft.Text(f"EN YUKSEK SKORUN: {d['rekor']}", size=16, weight=ft.FontWeight.BOLD, color="#ffd32a")
+    prof_bilgi_txt = ft.Text(
+        f"{prof['isim']} | {prof['kademe']} - {prof['sinif']}" if prof["kayitli"] else "",
+        size=12, color="#00cec9", weight=ft.FontWeight.BOLD, visible=prof["kayitli"]
+    )
+    prof_degis_btn = ft.Button("Profili Degistir", bgcolor="#636e72", color="white", width=240, visible=prof["kayitli"], on_click=lambda _: profil_ac())
 
-    def mod_sec_ac(e=None):
+    def oyna_tikla(e=None):
+        if prof["kayitli"]:
+            mod_ve_ders_ac()
+        else:
+            profil_ac()
+
+    def profil_ac():
+        secili_kad = [prof["kademe"] or "Ortaokul"]
+        secili_sin = [prof["sinif"] or "6. Sinif"]
+        sinif_kolon = ft.Column(spacing=4, tight=True)
+        uyari_txt = ft.Text("", color="#ff7675", size=12)
+        ad_input = ft.TextField(label="Name:", hint_text="Adini yaz (Max 20 karakter)", max_length=20, value=prof["isim"], autofocus=True, color="white", border_color="#0984e3")
+
+        sinif_haritasi = {
+            "Ilkokul": ("1. Sinif", "2. Sinif", "3. Sinif", "4. Sinif"),
+            "Ortaokul": ("5. Sinif", "6. Sinif", "7. Sinif", "8. Sinif"),
+            "Lise": ("9. Sinif", "10. Sinif", "11. Sinif", "12. Sinif"),
+            "Universite": ("1. Sinif (Uni)", "2. Sinif (Uni)", "3. Sinif (Uni)", "4. Sinif (Uni)"),
+        }
+
+        def sinif_yenile():
+            sinif_kolon.controls.clear()
+            liste = sinif_haritasi[secili_kad[0]]
+            if secili_sin[0] not in liste:
+                secili_sin[0] = liste[0]
+            for s in liste:
+                aktif_mi = (secili_sin[0] == s)
+                sinif_kolon.controls.append(
+                    ft.Button(
+                        s,
+                        bgcolor="#0984e3" if aktif_mi else "#121225",
+                        color="white",
+                        width=240,
+                        on_click=lambda _, x=s: (secili_sin.__setitem__(0, x), sinif_yenile(), page.update())
+                    )
+                )
+
+        def kad_sec(k):
+            secili_kad[0] = k
+            sinif_yenile()
+            page.update()
+
+        kad_satir1 = ft.Row([
+            ft.Button("Ilkokul", bgcolor="#00b894", color="white", width=116, on_click=lambda _: kad_sec("Ilkokul")),
+            ft.Button("Ortaokul", bgcolor="#0984e3", color="white", width=116, on_click=lambda _: kad_sec("Ortaokul")),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        kad_satir2 = ft.Row([
+            ft.Button("Lise", bgcolor="#e17055", color="white", width=116, on_click=lambda _: kad_sec("Lise")),
+            ft.Button("Universite", bgcolor="#6c5ce7", color="white", width=116, on_click=lambda _: kad_sec("Universite")),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+
+        async def kaydet_tikla(ev=None):
+            ad = (ad_input.value or "").strip()[:20]
+            if not ad:
+                uyari_txt.value = "Lutfen adini yaz!"
+                page.update()
+                return
+            prof.update({"isim": ad, "kademe": secili_kad[0], "sinif": secili_sin[0], "kayitli": True})
+            try:
+                await page.client_storage.set_async("hm_prof", prof)
+            except Exception:
+                pass
+            prof_bilgi_txt.value = f"{prof['isim']} | {prof['kademe']} - {prof['sinif']}"
+            prof_bilgi_txt.visible = True
+            prof_degis_btn.visible = True
+            page.pop_dialog()
+            mod_ve_ders_ac()
+
+        sinif_yenile()
         dlg = ft.AlertDialog(
             bgcolor="#1e1e3f",
-            title=ft.Text("Oyun Modu Sec", color="white"),
-            content=ft.Column(
-                [
-                    ft.Button("Tek Kisilik (Skor Tablosu)", bgcolor="#0984e3", color="white", width=240, on_click=lambda _: (page.pop_dialog(), isim_sor_ac("solo"))),
-                    ft.Button("1v1 VS Modu (2 Kisi - 15sn)", bgcolor="#e17055", color="white", width=240, on_click=lambda _: (page.pop_dialog(), isim_sor_ac("vs"))),
-                ],
-                tight=True,
-            ),
-            actions=[ft.TextButton("Iptal", on_click=lambda _: page.pop_dialog())],
+            title=ft.Text("Oyuncu Profili", color="white"),
+            content=ft.Column([ad_input, kad_satir1, kad_satir2, sinif_kolon, uyari_txt], tight=True, spacing=6),
+            actions=[
+                ft.TextButton("Iptal", on_click=lambda _: page.pop_dialog()),
+                ft.Button("KAYDET", bgcolor="#ffd32a", color="#121225", on_click=kaydet_tikla),
+            ],
         )
         page.show_dialog(dlg)
 
-    def isim_sor_ac(mod):
+    def ders_listesi_getir():
+        k = prof["kademe"]
+        if k == "Ilkokul":
+            return (("Toplama & Cikarma", "#e74c3c"), ("Carpim Tablosu", "#2980b9"), ("Sayi Oruntuleri", "#27ae60"), ("Gunluk Problemler", "#f39c12"))
+        elif k == "Ortaokul":
+            return (("Tam Sayilar & Islem", "#e74c3c"), ("Denklem & Cebir", "#2980b9"), ("Oran & Yuzde", "#27ae60"), ("Sayisal Mantik", "#f39c12"))
+        elif k == "Lise":
+            return (("Uslu & Koklu Sayilar", "#e74c3c"), ("Fonksiyon & Polinom", "#2980b9"), ("Permutasyon & Olasilik", "#27ae60"), ("TYT / AYT Mantik", "#f39c12"))
+        return (("Lineer Cebir & Matris", "#e74c3c"), ("Limit & Turev Temeli", "#2980b9"), ("Istatistik & Olasilik", "#27ae60"), ("ALES / Ileri Mantik", "#f39c12"))
+
+    def mod_ve_ders_ac():
+        dersler = ders_listesi_getir()
+        if not any(x[0] == d["ders"] for x in dersler):
+            d["ders"] = dersler[0][0]
+
+        durum_txt = ft.Text(f"Mod: {d['zorluk']} | Ders: {d['ders']}", size=11, color="#ffd32a", weight=ft.FontWeight.BOLD)
+
+        def zor_sec(z):
+            d["zorluk"] = z
+            durum_txt.value = f"Mod: {d['zorluk']} | Ders: {d['ders']}"
+            page.update()
+
+        def ders_sec(ad):
+            d["ders"] = ad
+            durum_txt.value = f"Mod: {d['zorluk']} | Ders: {d['ders']}"
+            page.update()
+
+        zor_row1 = ft.Row([
+            ft.Button("Kolay", bgcolor="#00b894", color="white", width=116, on_click=lambda _: zor_sec("Kolay")),
+            ft.Button("Orta", bgcolor="#0984e3", color="white", width=116, on_click=lambda _: zor_sec("Orta")),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        zor_row2 = ft.Row([
+            ft.Button("Zor", bgcolor="#e17055", color="white", width=116, on_click=lambda _: zor_sec("Zor")),
+            ft.Button("Cok Zor", bgcolor="#d63031", color="white", width=116, on_click=lambda _: zor_sec("Cok Zor")),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+
+        kat_row1 = ft.Row([
+            ft.Container(content=ft.Text(dersler[0][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[0][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[0][0])),
+            ft.Container(content=ft.Text(dersler[1][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[1][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[1][0])),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        kat_row2 = ft.Row([
+            ft.Container(content=ft.Text(dersler[2][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[2][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[2][0])),
+            ft.Container(content=ft.Text(dersler[3][0], size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER), bgcolor=dersler[3][1], width=116, height=54, border_radius=0, alignment=ft.Alignment(0, 0), padding=4, on_click=lambda _: ders_sec(dersler[3][0])),
+        ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+
+        dlg = ft.AlertDialog(
+            bgcolor="#1e1e3f",
+            title=ft.Text(f"Modlar & Dersler ({prof['sinif']})", size=15, color="white"),
+            content=ft.Column([
+                durum_txt,
+                ft.Text("MODLAR:", size=11, color="#a2a8d3"),
+                zor_row1, zor_row2,
+                ft.Text("DERS KATEGORISI:", size=11, color="#a2a8d3"),
+                kat_row1, kat_row2,
+                ft.Row([
+                    ft.Button("Tek Kisilik", bgcolor="#0984e3", color="white", width=116, on_click=lambda _: (page.pop_dialog(), oyun_basla_mod("solo"))),
+                    ft.Button("1v1 VS (15sn)", bgcolor="#e17055", color="white", width=116, on_click=lambda _: (page.pop_dialog(), oyun_basla_mod("vs"))),
+                ], alignment=ft.MainAxisAlignment.CENTER, spacing=6),
+            ], tight=True, spacing=5),
+            actions=[ft.TextButton("Iptal", on_click=lambda _: page.pop_dialog())],
+        )
+        page.show_dialog(dlg)
+    def oyun_basla_mod(mod):
         d["mod"] = mod
         if mod == "solo":
-            isim_input = ft.TextField(label="Name:", hint_text="Adini yaz (Max 20 karakter)", max_length=20, value="" if d["isim"] == "Oyuncu" else d["isim"], autofocus=True, color="white", border_color="#0984e3")
-            uyari = ft.Text("", color="#ff7675", size=12)
-
-            def onayla(ev=None):
-                girilen = (isim_input.value or "").strip()[:20]
-                if not girilen:
-                    uyari.value = "Lutfen bir isim yaz!"
-                    page.update()
-                    return
-                d["isim"] = girilen
-                page.pop_dialog()
-                ekran_degistir("oyun")
-                oyunu_baslat()
-
-            dlg = ft.AlertDialog(
-                bgcolor="#1e1e3f",
-                title=ft.Text("Oyuncu Adi", color="white"),
-                content=ft.Column([isim_input, uyari], tight=True),
-                actions=[
-                    ft.TextButton("Iptal", on_click=lambda _: page.pop_dialog()),
-                    ft.Button("Basla", bgcolor="#00b894", color="white", on_click=onayla),
-                ],
-            )
-            page.show_dialog(dlg)
+            ekran_degistir("oyun")
+            oyunu_baslat()
         else:
-            ad1 = ft.TextField(label="1. Oyuncu Name:", max_length=20, autofocus=True, color="white", border_color="#0984e3")
-            ad2 = ft.TextField(label="2. Oyuncu Name:", max_length=20, color="white", border_color="#e17055")
+            ad1 = ft.TextField(label="1. Oyuncu Name:", max_length=20, value=prof["isim"], color="white", border_color="#0984e3")
+            ad2 = ft.TextField(label="2. Oyuncu Name:", max_length=20, autofocus=True, color="white", border_color="#e17055")
             uyari = ft.Text("", color="#ff7675", size=12)
 
             def vs_onayla(ev=None):
@@ -185,33 +308,55 @@ async def main(page: ft.Page):
             actions=[ft.TextButton("Kapat", on_click=lambda _: page.pop_dialog())],
         )
         page.show_dialog(dlg)
+
     vs_banner = ft.Container(content=ft.Text("", size=12, weight=ft.FontWeight.BOLD, color="white"), bgcolor="#e17055", padding=5, border_radius=8, visible=False)
     ust_txt = ft.Text("Can:3 P:0 S:1", size=11, weight=ft.FontWeight.BOLD, color="#ff6b81")
     altin_txt = ft.Text("Altin:50", size=11, weight=ft.FontWeight.BOLD, color="#ffd32a")
     bar = ft.ProgressBar(value=1.0, width=310, height=11, color="#00b894", bgcolor="#1e1e3f")
-    kose1 = ft.Text("?", size=15, weight=ft.FontWeight.BOLD, color="white")
-    kose2 = ft.Text("?", size=15, weight=ft.FontWeight.BOLD, color="white")
-    soru_txt = ft.Text("HIZLI MAT", size=22, weight=ft.FontWeight.BOLD, color="#121225", text_align=ft.TextAlign.CENTER)
-    cevap_txt = ft.Text("UNO", size=20, weight=ft.FontWeight.BOLD, color="#0f3460", text_align=ft.TextAlign.CENTER)
+    kose1 = ft.Text("?", size=14, weight=ft.FontWeight.BOLD, color="white")
+    ders_etiket = ft.Text("Matematik", size=10, weight=ft.FontWeight.BOLD, color="white")
+    kose2 = ft.Text("?", size=14, weight=ft.FontWeight.BOLD, color="white")
+    soru_txt = ft.Text("HIZLI MAT", size=18, weight=ft.FontWeight.BOLD, color="#121225", text_align=ft.TextAlign.CENTER)
 
     kart_ic = ft.Container(
         content=ft.Column(
             [
-                ft.Row([kose1], alignment=ft.MainAxisAlignment.START, width=215),
+                ft.Row([kose1, ders_etiket], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, width=240),
                 ft.Container(
-                    content=ft.Column([soru_txt, cevap_txt], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=2),
-                    bgcolor="white", border_radius=36, width=175, height=82, alignment=ft.Alignment(0, 0),
+                    content=soru_txt,
+                    bgcolor="white", border_radius=0, width=236, height=106, padding=8, alignment=ft.Alignment(0, 0),
                 ),
-                ft.Row([kose2], alignment=ft.MainAxisAlignment.END, width=215),
+                ft.Row([kose2], alignment=ft.MainAxisAlignment.END, width=240),
             ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN, horizontal_alignment=ft.CrossAxisAlignment.CENTER, width=215, height=145,
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN, horizontal_alignment=ft.CrossAxisAlignment.CENTER, width=240, height=160,
         ),
-        bgcolor="#e74c3c", border_radius=14, padding=10, width=235, height=165, alignment=ft.Alignment(0, 0),
+        bgcolor="#e74c3c", border_radius=12, padding=8, width=258, height=176, alignment=ft.Alignment(0, 0),
     )
-    kart_dis = ft.Container(content=kart_ic, bgcolor="white", border_radius=18, padding=6)
-    msg_txt = ft.Text("Hazir!", size=13, weight=ft.FontWeight.BOLD, color="#ffd32a", text_align=ft.TextAlign.CENTER)
+    kart_dis = ft.Container(content=kart_ic, bgcolor="white", border_radius=16, padding=6)
+    msg_txt = ft.Text("Hazir!", size=12, weight=ft.FontWeight.BOLD, color="#ffd32a", text_align=ft.TextAlign.CENTER)
     karne_txt = ft.Text("", size=11, weight=ft.FontWeight.BOLD, color="white", text_align=ft.TextAlign.CENTER)
     karne_kutu = ft.Container(content=karne_txt, bgcolor="#1e1e3f", padding=8, border_radius=10, visible=False)
+
+    sik_butonlar = list()
+    for i in range(4):
+        sik_butonlar.append(
+            ft.Button(
+                f"{harfler[i]}) ?",
+                bgcolor=sik_renk[i],
+                color="white",
+                width=155,
+                height=52,
+                on_click=lambda _, idx=i: sik_sec(idx)
+            )
+        )
+    sik_kolon = ft.Column(
+        [
+            ft.Row([sik_butonlar[0], sik_butonlar[1]], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
+            ft.Row([sik_butonlar[2], sik_butonlar[3]], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
+        ],
+        spacing=8,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    )
 
     def guncelle():
         ust_txt.value = f"Can:{d['can']} P:{d['puan']} S:{d['svy']}"
@@ -219,9 +364,8 @@ async def main(page: ft.Page):
         menu_rekor_txt.value = f"EN YUKSEK SKORUN: {d['rekor']}"
         d_btn.content = f"Dondur ({d['jd']})"
         s_btn.content = f"+10sn ({d['js']})"
+        e_btn.content = f"50/50 ({d['je']})"
         a_btn.content = f"Atla ({d['vs_atla']})" if d["mod"] == "vs" else f"Atla ({d['ja']})"
-        if d["aktif"]:
-            cevap_txt.value = d["girdi"] if d["girdi"] != "" else "?"
         page.update()
 
     def duraklat_degis(e=None):
@@ -252,7 +396,7 @@ async def main(page: ft.Page):
             if kaydet_mi and d["mod"] == "solo":
                 if d["puan"] > d["rekor"]:
                     d["rekor"] = d["puan"]
-                skoru_kaydet_bulut(d["isim"], d["puan"])
+                skoru_kaydet_bulut(prof["isim"] or "Oyuncu", d["puan"])
             d["aktif"] = False
             d["dur"] = False
             page.pop_dialog()
@@ -273,7 +417,7 @@ async def main(page: ft.Page):
         else:
             dlg = ft.AlertDialog(
                 bgcolor="#1e1e3f", title=ft.Text("Menuye Don", color="white"),
-                content=ft.Text(f"{d['isim']} - Mevcut Puan: {d['puan']}\nSkorun kaydedilsin mi?", color="#dfe6e9"),
+                content=ft.Text(f"{prof['isim']} - Mevcut Puan: {d['puan']}\nSkorun kaydedilsin mi?", color="#dfe6e9"),
                 actions=[
                     ft.Button("Skoru Kaydet", bgcolor="#00b894", color="white", on_click=lambda _: secim(True)),
                     ft.Button("Kaydetme", bgcolor="#ff4757", color="white", on_click=lambda _: secim(False)),
@@ -282,44 +426,125 @@ async def main(page: ft.Page):
             )
         page.show_dialog(dlg)
 
+    def soru_uret():
+        z_taban = {"Kolay": 1, "Orta": 2, "Zor": 3, "Cok Zor": 4}.get(d["zorluk"], 2)
+        k_taban = {"Ilkokul": 0, "Ortaokul": 1, "Lise": 2, "Universite": 3}.get(prof["kademe"], 1)
+        guc = z_taban + k_taban + (d["svy"] - 1)
+        simge = "M"
+
+        if guc <= 2:
+            s1, s2 = random.randint(4, 15), random.randint(3, 13)
+            if random.random() < 0.5:
+                cvp, metin, simge = s1 + s2, f"{s1} + {s2} = ?", "+"
+            else:
+                cvp, metin, simge = s1 * s2, f"{s1} x {s2} = ?", "x"
+        elif guc <= 4:
+            tip = random.randint(0, 2)
+            if tip == 0:
+                s1, s2 = random.randint(14, 38), random.randint(12, 29)
+                cvp, metin, simge = s1 * s2, f"{s1} x {s2} = ?", "x"
+            elif tip == 1:
+                a, x, b = random.randint(3, 8), random.randint(4, 12), random.randint(5, 16)
+                cvp, metin = x, f"{a}x + {b} = {a * x + b} ise x kactir?"
+            else:
+                a, b = random.randint(2, 6), random.randint(3, 8)
+                cvp, metin = a * 5 + b, f"Bir sepette {a * 10} ceviz var. Yarisinin {b} fazlasi kactir?"
+        elif guc <= 6:
+            tip = random.randint(0, 3)
+            if tip == 0:
+                s1, s2 = random.randint(28, 72), random.randint(24, 78)
+                cvp, metin, simge = s1 * s2, f"{s1} x {s2} isleminin sonucu kactir?", "x"
+            elif tip == 1:
+                a, b = random.randint(5, 12), random.randint(3, 8)
+                cvp, metin = a * b, f"x + y = {a + b} ve x - y = {a - b} ise x . y carpimi kactir?"
+            elif tip == 2:
+                n = random.randint(4, 10)
+                cvp, metin = 2 * n + 3, f"Ardisik 3 tek sayinin toplami {3 * (2 * n + 1)} ise en buyuk sayi kactir?"
+            else:
+                h, t = random.randint(6, 10) * 10, random.randint(2, 5)
+                cvp, metin = h * t * 2, f"Saatte {h} km hizla {t} saatte yolun yarisini giden aracin tum yolu kac km?"
+        else:
+            tip = random.randint(0, 3)
+            if tip == 0:
+                s1, s2 = random.randint(45, 94), random.randint(52, 96)
+                cvp, metin, simge = s1 * s2, f"{s1} x {s2} carpiminin sonucu kactir?", "x"
+            elif tip == 1:
+                k = random.randint(3, 8)
+                cvp, metin = k * k + 1, f"f(x) = x^2 + 1 fonksiyonunda f({k}) degeri kactir?"
+            elif tip == 2:
+                a = random.randint(4, 8)
+                cvp, metin = (a * (a - 1)) // 2, f"{a} kisilik grupta herkes birbiriyle 1 kez tokalasirsa kac tokalasma olur?"
+            else:
+                b = random.randint(3, 7)
+                cvp, metin = b * 32 - 1, f"{b - 1}, {b * 2 - 1}, {b * 4 - 1}, {b * 8 - 1}, ? Oruntude siradaki sayi kactir?"
+
+        sik_set = {cvp}
+        while len(sik_set) < 4:
+            fark = random.randint(1, 4) * (10 if abs(cvp) > 100 else 2)
+            aday = cvp + (fark if random.random() < 0.5 else -fark)
+            if aday != cvp and aday >= 0:
+                sik_set.add(aday)
+        siklar = list(sik_set)
+        random.shuffle(siklar)
+        return metin, cvp, simge, siklar
+
     def yeni_soru():
         d["aktif"] = True
         d["soru_sayac"] += 1
         if d["soru_sayac"] % 15 == 0:
             gc.collect()
-        ys = 1 if d["puan"] < 50 else (2 if d["puan"] < 100 else 3)
+        ys = 1 if d["puan"] < 40 else (2 if d["puan"] < 90 else (3 if d["puan"] < 150 else 4))
         if ys > d["svy"]:
             d["svy"] = ys
-        d["kalan"] = 15.0 if d["mod"] == "vs" else 7.0 + (d["svy"] - 1) * 3.0
+        d["kalan"] = 15.0 if d["mod"] == "vs" else 12.0
         d["max"] = d["kalan"]
         d["donma"] = 0.0
-        d["girdi"] = ""
 
-        if d["svy"] == 1:
-            isl = random.choice(("+", "-"))
-            s1, s2 = random.randint(1, 10), random.randint(1, 10)
-        elif d["svy"] == 2:
-            isl = random.choice(("+", "-", "*"))
-            if isl == "*":
-                s1, s2 = random.randint(2, 9), random.randint(2, 9)
-            else:
-                s1, s2 = random.randint(10, 25), random.randint(10, 25)
-        else:
-            isl = random.choice(("+", "-", "*"))
-            if isl == "*":
-                s1, s2 = random.randint(11, 25), random.randint(11, 25)
-            else:
-                s1, s2 = random.randint(25, 60), random.randint(20, 50)
-
-        d["dc"] = s1 + s2 if isl == "+" else (s1 - s2 if isl == "-" else s1 * s2)
-        d["simge"] = "x" if isl == "*" else isl
-        d["soru"] = f"{s1} {d['simge']} {s2}"
+        metin, cvp, simge, siklar = soru_uret()
+        d["dc"], d["simge"], d["soru"], d["siklar"] = cvp, simge, metin, siklar
         d["renk"] = random.choice(uno)
+
+        soru_txt.size = 13 if len(metin) > 55 else (15 if len(metin) > 30 else 20)
         kart_ic.bgcolor = d["renk"]
+        ders_etiket.value = f"{d['ders']} | {d['zorluk']}"
         soru_txt.value = d["soru"]
-        kose1.value = d["simge"]
-        kose2.value = d["simge"]
+        kose1.value = simge
+        kose2.value = simge
+
+        for i in range(4):
+            sik_butonlar[i].content = f"{harfler[i]}) {siklar[i]}"
+            sik_butonlar[i].visible = True
+        sik_kolon.visible = True
         guncelle()
+
+    def sik_sec(idx):
+        if not d["aktif"] or d["dur"] or d["can"] <= 0:
+            return
+        secilen = d["siklar"][idx]
+        if secilen == d["dc"]:
+            d["top_sure"] += (d["max"] - d["kalan"])
+            d["dogru"] += 1
+            d["kombo"] += 1
+            carpan = 2 if d["cift_puan"] > 0 else 1
+            if d["cift_puan"] > 0:
+                d["cift_puan"] -= 1
+            kaz = (10 + (d["kombo"] - 1) * 2) * carpan
+            d["puan"] += kaz
+            if d["mod"] == "solo":
+                d["altin"] += 10 * carpan
+            msg_txt.value = f"Dogru! +{kaz} Puan" + (" (2X BONUS!)" if carpan == 2 else "")
+            msg_txt.color = "#00b894"
+            yeni_soru()
+        else:
+            d["yanlis"] += 1
+            d["can"] -= 1
+            d["kombo"] = 0
+            if d["can"] == 0:
+                bitti(f"Dogru sik: {d['dc']}")
+            else:
+                msg_txt.value = f"Yanlis! Dogrusu: {d['dc']}"
+                msg_txt.color = "#ff7675"
+                yeni_soru()
 
     def bitti(sebep):
         try:
@@ -329,9 +554,10 @@ async def main(page: ft.Page):
         d["aktif"] = False
         d["kombo"] = 0
         d["donma"] = 0.0
+        sik_kolon.visible = False
         kart_ic.bgcolor = "#e74c3c"
-        soru_txt.value = "OYUN BITTI"
-        cevap_txt.value = f"{d['puan']} P"
+        soru_txt.size = 19
+        soru_txt.value = f"OYUN BITTI\n{d['puan']} PUAN"
         kose1.value = "X"
         kose2.value = "X"
         if d["mod"] == "vs":
@@ -354,13 +580,16 @@ async def main(page: ft.Page):
                 if d["p1"]["ort"] < 90 and d["p2"]["ort"] < 90 and abs(d["p1"]["ort"] - d["p2"]["ort"]) > 0.1:
                     hizli = d["p1"] if d["p1"]["ort"] < d["p2"]["ort"] else d["p2"]
                     yavas = d["p2"] if d["p1"]["ort"] < d["p2"]["ort"] else d["p1"]
-                    hediye_sec = random.choice(("d", "s", "a"))
+                    hediye_sec = random.choice(("d", "s", "e", "a"))
                     if hediye_sec == "d":
                         d["jd"] += 1
                         hediye_ad = "Zaman Dondurucu (5sn)"
                     elif hediye_sec == "s":
                         d["js"] += 1
                         hediye_ad = "+10 Saniye Jokeri"
+                    elif hediye_sec == "e":
+                        d["je"] += 1
+                        hediye_ad = "50/50 Sik Eleme"
                     else:
                         d["ja"] += 1
                         hediye_ad = "Soru Atla Jokeri"
@@ -416,14 +645,12 @@ async def main(page: ft.Page):
             final_skor = max(0, d["puan"] - ceza)
             if final_skor > d["rekor"]:
                 d["rekor"] = final_skor
-            skoru_kaydet_bulut(d["isim"], final_skor)
-            msg_txt.value = f"{sebep} | Rekor: {d['rekor']}"
+            skoru_kaydet_bulut(prof["isim"] or "Oyuncu", final_skor)
+            msg_txt.value = f"{sebep} | Ulasilan: Seviye {d['svy']}"
             msg_txt.color = "#ff7675"
             ceza_ek = f"\nKayip Soru Fazla ({kayip_sayisi}>{d['dogru']}): -10 Ceza -> Net: {final_skor} P" if ceza > 0 else ""
-            karne_txt.value = f"Kazanilan: {d['puan']} P | Dogru: {d['dogru']} | Yanlis: {d['yanlis']} | Bos: {d['bos']}{ceza_ek}"
+            karne_txt.value = f"SONUC (Seviye {d['svy']}): {d['puan']} P\nDogru: {d['dogru']} | Yanlis: {d['yanlis']} | Bos: {d['bos']}{ceza_ek}"
             karne_kutu.visible = True
-        oyna_btn.visible = False
-        gonder_btn.visible = False
         tekrar_btn.visible = True
         gc.collect()
         guncelle()
@@ -444,10 +671,20 @@ async def main(page: ft.Page):
             msg_txt.value = "+10 Saniye Eklendi!"
             msg_txt.color = "#a29bfe"
             guncelle()
+        elif t == "e" and d["je"] > 0:
+            d["je"] -= 1
+            silinen = 0
+            for i in range(4):
+                if d["siklar"][i] != d["dc"] and silinen < 2:
+                    sik_butonlar[i].visible = False
+                    silinen += 1
+            msg_txt.value = "50/50: Iki yanlis sik elendi!"
+            msg_txt.color = "#00b894"
+            guncelle()
         elif t == "a":
             if d["mod"] == "vs":
                 if d["vs_atla"] <= 0:
-                    msg_txt.value = "VS Modunda Atla hakkin bitti!"
+                    msg_txt.value = "VS Atla hakkin bitti!"
                     msg_txt.color = "#ff7675"
                     guncelle()
                     return
@@ -460,7 +697,7 @@ async def main(page: ft.Page):
                     return
                 d["ja"] -= 1
             d["bos"] += 1
-            msg_txt.value = f"Soru atlandi! (Cevap {d['dc']} idi)"
+            msg_txt.value = f"Soru atlandi! (Dogrusu: {d['dc']})"
             msg_txt.color = "#fdcb6e"
             yeni_soru()
         else:
@@ -487,9 +724,15 @@ async def main(page: ft.Page):
             elif t == "s":
                 d["js"] += 1
                 m_txt.value = "+10 Saniye alindi!"
+            elif t == "e":
+                d["je"] += 1
+                m_txt.value = "50/50 Sik Eleme alindi!"
             elif t == "a":
                 d["ja"] += 1
                 m_txt.value = "Soru Atla jokeri alindi!"
+            elif t == "2x":
+                d["cift_puan"] += 3
+                m_txt.value = "3 Soru 2X Puan aktif!"
             elif t == "c":
                 d["jc"] += 1
                 if d["can"] > 0:
@@ -499,61 +742,19 @@ async def main(page: ft.Page):
             guncelle()
 
         dlg = ft.AlertDialog(
-            bgcolor="#1e1e3f", title=ft.Text("Magaza", color="white"),
+            bgcolor="#1e1e3f", title=ft.Text("Genisletilmis Magaza", color="white"),
             content=ft.Column([
                 m_txt, uyari_txt,
                 ft.Button("Zaman Dondur (5sn) - 30 Altin", bgcolor="#0984e3", color="white", width=240, on_click=lambda _: al("d", 30)),
+                ft.Button("50/50 Sik Eleme (1x) - 40 Altin", bgcolor="#00b894", color="white", width=240, on_click=lambda _: al("e", 40)),
                 ft.Button("Ekstra Sure (+10sn) - 50 Altin", bgcolor="#6c5ce7", color="white", width=240, on_click=lambda _: al("s", 50)),
                 ft.Button("Kalici +1 Can - 60 Altin", bgcolor="#e94560", color="white", width=240, on_click=lambda _: al("c", 60)),
                 ft.Button("Soru Atla (1x) - 70 Altin", bgcolor="#e17055", color="white", width=240, on_click=lambda _: al("a", 70)),
-            ], tight=True),
+                ft.Button("3 Soru 2X Puan - 80 Altin", bgcolor="#fdcb6e", color="#121225", width=240, on_click=lambda _: al("2x", 80)),
+            ], tight=True, spacing=4),
             actions=[ft.TextButton("Kapat", on_click=lambda _: page.pop_dialog())],
         )
         page.show_dialog(dlg)
-
-    def tus(t):
-        if not d["aktif"] or d["can"] <= 0 or d["dur"]:
-            return
-        if t == "SIL":
-            d["girdi"] = d["girdi"][:-1]
-        elif t == "-":
-            d["girdi"] = d["girdi"][1:] if d["girdi"].startswith("-") else "-" + d["girdi"]
-        else:
-            d["girdi"] += t
-        guncelle()
-
-    def kontrol(e=None):
-        if not d["aktif"] or d["can"] <= 0 or d["dur"]:
-            return
-        try:
-            cvp = int(d["girdi"])
-        except ValueError:
-            msg_txt.value = "Once bir sayi tusla!"
-            msg_txt.color = "#ffd32a"
-            guncelle()
-            return
-        if cvp == d["dc"]:
-            d["top_sure"] += (d["max"] - d["kalan"])
-            d["dogru"] += 1
-            d["kombo"] += 1
-            kaz = 10 + (d["kombo"] - 1) * 2
-            d["puan"] += kaz
-            if d["mod"] == "solo":
-                d["altin"] += 10
-            kt = f" | {d['kombo']}x KOMBO!" if d["kombo"] > 1 else ""
-            msg_txt.value = f"Harika! +{kaz} Puan{kt}"
-            msg_txt.color = "#00b894"
-            yeni_soru()
-        else:
-            d["yanlis"] += 1
-            d["can"] -= 1
-            d["kombo"] = 0
-            if d["can"] == 0:
-                bitti(f"Dogrusu {d['dc']} idi")
-            else:
-                msg_txt.value = f"Yanlis! Dogrusu {d['dc']} idi"
-                msg_txt.color = "#ff7675"
-                yeni_soru()
 
     def oyunu_baslat(e=None):
         d["puan"] = 0
@@ -564,17 +765,17 @@ async def main(page: ft.Page):
         d["yanlis"] = 0
         d["bos"] = 0
         d["top_sure"] = 0.0
+        d["cift_puan"] = 0
         karne_kutu.visible = False
         p_btn.content = "II"
         p_btn.bgcolor = "#636e72"
-        oyna_btn.visible = False
         tekrar_btn.visible = False
-        gonder_btn.visible = True
         if d["mod"] == "vs":
             d["can"] = 3
             d["vs_atla"] = 3
             d_btn.visible = False
             s_btn.visible = False
+            e_btn.visible = False
             mag_btn.visible = False
             aktif_ad = d["p1"]["isim"] if d["vs_sira"] == 1 else d["p2"]["isim"]
             vs_banner.content.value = f"1v1 VS (15sn) | Sira: {aktif_ad} ({d['vs_sira']}/2)"
@@ -584,9 +785,10 @@ async def main(page: ft.Page):
             d["can"] = 3 + d["jc"]
             d_btn.visible = True
             s_btn.visible = True
+            e_btn.visible = True
             mag_btn.visible = True
             vs_banner.visible = False
-            msg_txt.value = f"Iyi sanslar {d['isim']}! ({d['can']} Can)"
+            msg_txt.value = f"Iyi sanslar {prof['isim']}! ({d['can']} Can)"
         msg_txt.color = "#00b894"
         yeni_soru()
 
@@ -595,45 +797,38 @@ async def main(page: ft.Page):
     mag_btn = ft.Button("Magaza", bgcolor="#ffd32a", color="#121225", width=82, on_click=magaza)
     d_btn = ft.Button("Dondur (1)", bgcolor="#0984e3", color="white", on_click=lambda _: joker("d"))
     s_btn = ft.Button("+10sn (0)", bgcolor="#6c5ce7", color="white", on_click=lambda _: joker("s"))
+    e_btn = ft.Button("50/50 (1)", bgcolor="#00b894", color="white", on_click=lambda _: joker("e"))
     a_btn = ft.Button("Atla (1)", bgcolor="#e17055", color="white", on_click=lambda _: joker("a"))
-    oyna_btn = ft.Button("OYNA", bgcolor="#0984e3", color="white", width=260, height=48, on_click=oyunu_baslat)
-    gonder_btn = ft.Button("GONDER", bgcolor="#00b894", color="white", width=260, height=46, visible=False, on_click=kontrol)
     tekrar_btn = ft.Button("TEKRAR OYNA", bgcolor="#ff4757", color="white", width=260, height=46, visible=False, on_click=oyunu_baslat)
-
-    s_renk = ("#c0392b", "#1f618d", "#1e8449", "#d68910")
-    satirlar = list()
-    for r, s in enumerate((("7", "8", "9"), ("4", "5", "6"), ("1", "2", "3"), ("-", "0", "SIL"))):
-        btns = [ft.Button(t, bgcolor=("#ff4757" if t == "SIL" else ("#6c5ce7" if t == "-" else s_renk[r])), color="white", width=82, height=46, on_click=lambda _, x=t: tus(x)) for t in s]
-        satirlar.append(ft.Row(btns, alignment=ft.MainAxisAlignment.CENTER, spacing=8))
 
     ust_bar = ft.Container(content=ft.Row([geri_btn, p_btn, ust_txt, altin_txt, mag_btn], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=2), bgcolor="#1e1e3f", padding=6, border_radius=10, width=340)
 
     menu_ekrani = ft.Column([
-        ft.Container(height=40),
+        ft.Container(height=30),
         ft.Container(content=menu_rekor_txt, bgcolor="#1e1e3f", padding=14, border_radius=12),
-        ft.Container(height=45),
+        prof_bilgi_txt,
+        ft.Container(height=30),
         ft.Text("HIZLI MATEMATIK", size=28, weight=ft.FontWeight.BOLD, color="white"),
         ft.Text("UNO Kartli Zeka Yarisi", size=13, color="#a2a8d3"),
-        ft.Container(height=25),
-        ft.Button("OYNA", bgcolor="#0984e3", color="white", width=240, height=56, on_click=mod_sec_ac),
-        ft.Container(height=10),
+        ft.Container(height=20),
+        ft.Button("OYNA", bgcolor="#0984e3", color="white", width=240, height=56, on_click=oyna_tikla),
+        ft.Container(height=8),
         ft.Button("MAGAZA", bgcolor="#ffd32a", color="#121225", width=240, height=48, on_click=magaza),
-        ft.Container(height=35),
+        ft.Container(height=20),
         ft.Button("SKOR TABLOSU", bgcolor="#6c5ce7", color="white", width=240, height=48, on_click=skor_tablosu_ac),
+        prof_degis_btn,
     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.SPACE_BETWEEN, visible=True)
 
     oyun_ekrani = ft.Column([
-        ft.Container(height=20),
+        ft.Container(height=18),
         vs_banner,
         ust_bar,
         bar,
         kart_dis,
-        ft.Row([d_btn, s_btn, a_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=6),
+        ft.Row([d_btn, s_btn, e_btn, a_btn], alignment=ft.MainAxisAlignment.CENTER, spacing=4),
         msg_txt,
         karne_kutu,
-        ft.Column(satirlar, spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-        oyna_btn,
-        gonder_btn,
+        sik_kolon,
         tekrar_btn,
     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=6, visible=False)
 
@@ -664,7 +859,7 @@ async def main(page: ft.Page):
                         if d["can"] == 0:
                             bitti("SURE DOLDU!")
                         else:
-                            msg_txt.value = f"SURE DOLDU! Dogrusu {d['dc']} idi"
+                            msg_txt.value = f"SURE DOLDU! Dogrusu: {d['dc']}"
                             msg_txt.color = "#ff7675"
                             yeni_soru()
                 page.update()
