@@ -8,24 +8,27 @@
 <style>
 *{box-sizing:border-box;font-family:Arial,sans-serif;user-select:none;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:#121225;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
-.wrap{width:350px;padding:12px;text-align:center;position:relative;z-index:2}
-.box{background:#1e1e3f;padding:12px;border-radius:12px;margin-bottom:10px}
-.btn{border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer;padding:12px;font-size:15px}
+.wrap{width:355px;padding:10px;text-align:center;position:relative;z-index:2}
+.box{background:#1e1e3f;padding:10px;border-radius:12px;margin-bottom:8px}
+.btn{border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer;padding:11px;font-size:14px}
 .btn:active{transform:scale(.96)}
-.bar-bg{width:100%;height:12px;background:#1e1e3f;border-radius:8px;overflow:hidden;margin:8px 0}
+.bar-bg{width:100%;height:11px;background:#1e1e3f;border-radius:8px;overflow:hidden;margin:6px 0}
 #bar{width:100%;height:100%;background:#00b894;transition:width .05s linear}
-.card-out{background:#fff;padding:6px;border-radius:18px;width:240px;margin:8px auto}
-#card{background:#e74c3c;border-radius:14px;padding:10px;height:165px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
-.oval{background:#fff;border-radius:36px;width:175px;height:82px;display:flex;flex-direction:column;justify-content:center;align-items:center}
-#soru{color:#121225;font-size:22px;font-weight:bold}
-#cevap{color:#0f3460;font-size:20px;font-weight:bold}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
-.kbtn{padding:14px;font-size:18px;border:none;border-radius:10px;color:#fff;font-weight:bold;cursor:pointer}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;justify-content:center;align-items:center;padding:16px;z-index:10}
-.mbox{background:#1e1e3f;padding:18px;border-radius:14px;width:325px;text-align:center;position:relative;z-index:12}
-input{width:100%;padding:10px;border-radius:8px;border:2px solid #0984e3;background:#121225;color:#fff;font-size:16px;text-align:center;margin:8px 0}
-.karne{background:#121225;padding:10px;border-radius:10px;margin-top:8px;font-size:12px;line-height:1.5}
+.card-out{background:#fff;padding:6px;border-radius:16px;width:270px;margin:6px auto}
+#card{background:#e74c3c;border-radius:12px;padding:8px;min-height:165px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.soru-kare{background:#fff;border-radius:0;width:242px;min-height:108px;padding:8px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+#soru{color:#121225;font-size:18px;font-weight:bold;word-wrap:break-word;overflow-wrap:break-word;line-height:1.3;max-width:100%}
+.sik-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.sbtn{padding:13px 8px;font-size:15px;border:none;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;word-wrap:break-word}
+.sbtn:active{transform:scale(.96)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;padding:12px;z-index:10;overflow-y:auto}
+.mbox{background:#1e1e3f;padding:16px;border-radius:14px;width:332px;text-align:center;position:relative;z-index:12;max-height:92vh;overflow-y:auto}
+input{width:100%;padding:10px;border-radius:8px;border:2px solid #0984e3;background:#121225;color:#fff;font-size:15px;text-align:center;margin:6px 0}
+.kat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.kat-kare{border-radius:0;padding:14px 6px;font-size:13px;font-weight:bold;color:#fff;border:2px solid #fff;cursor:pointer;word-wrap:break-word}
+.karne{background:#121225;padding:9px;border-radius:10px;margin-top:6px;font-size:12px;line-height:1.5}
 #konfetiCanvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+.secili{outline:3px solid #ffd32a;transform:scale(1.03)}
 </style>
 </head>
 <body>
@@ -33,108 +36,152 @@ input{width:100%;padding:10px;border-radius:8px;border:2px solid #0984e3;backgro
 
 <div class="wrap" id="menu">
   <div class="box" style="color:#ffd32a;font-weight:bold" id="mRekor">EN YÜKSEK SKORUN: 0</div>
-  <h1 style="margin:26px 0 4px">HIZLI MATEMATİK</h1>
-  <div style="color:#a2a8d3;font-size:13px;margin-bottom:24px">UNO Kartlı Zeka Yarışı</div>
-  <button class="btn" style="background:#0984e3;width:240px;font-size:18px;padding:16px" onclick="modSecAc()">OYNA</button><br><br>
-  <button class="btn" style="background:#ffd32a;color:#121225;width:240px" onclick="magazaAc()">MAĞAZA</button><br><br><br>
-  <button class="btn" style="background:#6c5ce7;width:240px" onclick="skorAc()">SKOR TABLOSU</button>
+  <div id="profilBilgi" style="font-size:12px;color:#00cec9;margin-bottom:8px"></div>
+  <h1 style="margin:18px 0 4px">HIZLI MATEMATİK</h1>
+  <div style="color:#a2a8d3;font-size:13px;margin-bottom:20px">UNO Kartlı Zeka Yarışı</div>
+  <button class="btn" style="background:#0984e3;width:240px;font-size:18px;padding:15px" onclick="oynaTikla()">OYNA</button><br><br>
+  <button class="btn" style="background:#ffd32a;color:#121225;width:240px" onclick="magazaAc()">MAĞAZA</button><br><br>
+  <button class="btn" style="background:#6c5ce7;width:240px" onclick="skorAc()">SKOR TABLOSU</button><br><br>
+  <button class="btn" id="profDegisBtn" style="background:#636e72;width:240px;font-size:12px;padding:8px;display:none" onclick="profilAc()">Profili Değiştir</button>
 </div>
 
 <div class="wrap" id="oyun" style="display:none">
-  <div id="vsBanner" style="display:none;background:#e17055;padding:5px;border-radius:8px;font-weight:bold;font-size:13px;margin-bottom:6px"></div>
-  <div class="box" style="display:flex;justify-content:space-between;align-items:center;padding:8px">
-    <button class="btn" style="background:#ff4757;padding:6px 10px" onclick="geriAc()">←</button>
-    <button class="btn" id="pBtn" style="background:#636e72;padding:6px 10px" onclick="duraklat()">II</button>
-    <span id="ustTxt" style="color:#ff6b81;font-size:12px;font-weight:bold">Can:3 P:0 S:1</span>
-    <span id="altinTxt" style="color:#ffd32a;font-size:12px;font-weight:bold">Altın:50</span>
-    <button class="btn" id="magBtn" style="background:#ffd32a;color:#121225;padding:6px 10px;font-size:12px" onclick="magazaAc()">Mağaza</button>
+  <div id="vsBanner" style="display:none;background:#e17055;padding:5px;border-radius:8px;font-weight:bold;font-size:12px;margin-bottom:5px"></div>
+  <div class="box" style="display:flex;justify-content:space-between;align-items:center;padding:7px">
+    <button class="btn" style="background:#ff4757;padding:5px 9px" onclick="geriAc()">←</button>
+    <button class="btn" id="pBtn" style="background:#636e72;padding:5px 9px" onclick="duraklat()">II</button>
+    <span id="ustTxt" style="color:#ff6b81;font-size:11px;font-weight:bold">Can:3 P:0 S:1</span>
+    <span id="altinTxt" style="color:#ffd32a;font-size:11px;font-weight:bold">Altın:50</span>
+    <button class="btn" id="magBtn" style="background:#ffd32a;color:#121225;padding:5px 9px;font-size:11px" onclick="magazaAc()">Mağaza</button>
   </div>
   <div class="bar-bg"><div id="bar"></div></div>
   <div class="card-out"><div id="card">
-    <div style="width:100%;text-align:left;font-weight:bold" id="k1">?</div>
-    <div class="oval"><div id="soru">12 + 8</div><div id="cevap">?</div></div>
-    <div style="width:100%;text-align:right;font-weight:bold" id="k2">?</div>
+    <div style="width:100%;display:flex;justify-content:space-between;font-weight:bold;font-size:13px"><span id="k1">?</span><span id="dersEtiket" style="font-size:11px;background:rgba(0,0,0,.25);padding:2px 6px">Matematik</span></div>
+    <div class="soru-kare"><div id="soru">12 + 8 = ?</div></div>
+    <div style="width:100%;text-align:right;font-weight:bold;font-size:13px" id="k2">?</div>
   </div></div>
-  <div style="display:flex;gap:6px;justify-content:center;margin:8px 0">
-    <button class="btn" id="dBtn" style="background:#0984e3;padding:8px 10px;font-size:13px" onclick="joker('d')">Dondur (1)</button>
-    <button class="btn" id="sBtn" style="background:#6c5ce7;padding:8px 10px;font-size:13px" onclick="joker('s')">+10sn (0)</button>
-    <button class="btn" id="aBtn" style="background:#e17055;padding:8px 12px;font-size:13px" onclick="joker('a')">Atla (1)</button>
+  <div style="display:flex;gap:5px;justify-content:center;margin:6px 0;flex-wrap:wrap">
+    <button class="btn" id="dBtn" style="background:#0984e3;padding:7px 8px;font-size:12px" onclick="joker('d')">Dondur (1)</button>
+    <button class="btn" id="sBtn" style="background:#6c5ce7;padding:7px 8px;font-size:12px" onclick="joker('s')">+10sn (0)</button>
+    <button class="btn" id="eBtn" style="background:#00b894;padding:7px 8px;font-size:12px" onclick="joker('e')">50/50 (1)</button>
+    <button class="btn" id="aBtn" style="background:#e17055;padding:7px 9px;font-size:12px" onclick="joker('a')">Atla (1)</button>
   </div>
-  <div id="msg" style="color:#00b894;font-size:13px;font-weight:bold;min-height:18px">Başladı!</div>
+  <div id="msg" style="color:#00b894;font-size:12px;font-weight:bold;min-height:18px">Başladı!</div>
   <div id="karneKutu" class="karne" style="display:none"></div>
-  <div class="grid" id="pad"></div>
-  <button class="btn" id="gBtn" style="background:#00b894;width:100%" onclick="kontrol()">GÖNDER</button>
-  <button class="btn" id="tBtn" style="background:#ff4757;width:100%;display:none" onclick="baslat()">TEKRAR OYNA</button>
+  <div class="sik-grid" id="sikGrid"></div>
+  <button class="btn" id="tBtn" style="background:#ff4757;width:100%;display:none;margin-top:6px" onclick="baslat()">TEKRAR OYNA</button>
 </div>
 
 <div class="modal" id="modal"><div class="mbox" id="mContent"></div></div>
 
 <script>
-try{localStorage.clear();sessionStorage.clear();}catch(e){}
 const DB="https://"+"hizli-matematik-10492-default-rtdb"+".europe-west1.firebasedatabase.app/skorlar.json";
 const uno=["#e74c3c","#2980b9","#27ae60","#f39c12"];
-let d={mod:"solo",isim:"Oyuncu",puan:0,can:3,svy:1,dc:0,kalan:7,max:7,donma:0,aktif:false,dur:false,altin:50,rekor:0,kombo:0,jd:1,js:0,ja:1,jc:0,girdi:"",soru:"",simge:"+",renk:"#e74c3c",dogru:0,yanlis:0,bos:0,vsSira:1,vsAtla:3,topSure:0,p1:{},p2:{},magazaAcik:false};
+const sikRenk=["#c0392b","#1f618d","#1e8449","#d68910"];
+let prof={isim:"",kademe:"Ortaokul",sinif:"6. Sınıf",kayitli:false};
+try{let k=JSON.parse(localStorage.getItem("hm_prof"));if(k&&k.kayitli)prof=k;}catch(e){}
+
+let d={mod:"solo",zorluk:"Orta",ders:"Dört İşlem",puan:0,can:3,svy:1,dc:0,kalan:10,max:10,donma:0,aktif:false,dur:false,altin:50,rekor:0,kombo:0,jd:1,js:0,ja:1,je:1,jc:0,ciftPuan:0,soru:"",simge:"+",renk:"#e74c3c",dogru:0,yanlis:0,bos:0,vsSira:1,vsAtla:3,topSure:0,p1:{},p2:{},magazaAcik:false,siklar:};
+
+function profYaz(){
+  let el=document.getElementById("profilBilgi"),btn=document.getElementById("profDegisBtn");
+  if(prof.kayitli){el.textContent=`👤 ${prof.isim} | ${prof.kademe} - ${prof.sinif}`;btn.style.display="inline-block";}
+  else{el.textContent="";btn.style.display="none";}
+}
+profYaz();
 
 const cnv=document.getElementById("konfetiCanvas"),ctx=cnv.getContext("2d");
-let parcaciklar=[],animId=null;
+let parcaciklar=,animId=null;
 function konfetiPatlat(){
   if(animId)cancelAnimationFrame(animId);
   cnv.width=window.innerWidth;cnv.height=window.innerHeight;
   const rnk=["#ff4757","#ffd32a","#00b894","#0984e3","#a29bfe","#ff6b81","#00cec9","#fdcb6e"];
-  parcaciklar=[];
-  for(let i=0;i<90;i++){
-    parcaciklar.push({x:cnv.width/2+(Math.random()-0.5)*140,y:cnv.height-10,vx:(Math.random()-0.5)*14,vy:-(Math.random()*15+9),w:Math.random()*9+5,h:Math.random()*6+4,r:Math.random()*360,vr:(Math.random()-0.5)*12,c:rnk[Math.floor(Math.random()*rnk.length)],sekil:Math.random()>0.4?"kare":"daire"});
-  }
+  parcaciklar=;
+  for(let i=0;i<90;i++)parcaciklar.push({x:cnv.width/2+(Math.random()-.5)*140,y:cnv.height-10,vx:(Math.random()-.5)*14,vy:-(Math.random()*15+9),w:Math.random()*9+5,h:Math.random()*6+4,r:Math.random()*360,vr:(Math.random()-.5)*12,c:rnk[Math.floor(Math.random()*rnk.length)],sekil:Math.random()>.4?"kare":"daire"});
   animKonfeti();
 }
 function animKonfeti(){
   ctx.clearRect(0,0,cnv.width,cnv.height);
-  parcaciklar.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;p.vy+=0.38;p.r+=p.vr;
-    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r*Math.PI/180);ctx.fillStyle=p.c;
-    if(p.sekil=="kare")ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-    else{ctx.beginPath();ctx.arc(0,0,p.w/2,0,Math.PI*2);ctx.fill();}
-    ctx.restore();
-  });
+  parcaciklar.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.38;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r*Math.PI/180);ctx.fillStyle=p.c;if(p.sekil=="kare")ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);else{ctx.beginPath();ctx.arc(0,0,p.w/2,0,Math.PI*2);ctx.fill();}ctx.restore();});
   parcaciklar=parcaciklar.filter(p=>p.y<cnv.height+30);
-  if(parcaciklar.length>0)animId=requestAnimationFrame(animKonfeti);
-  else{ctx.clearRect(0,0,cnv.width,cnv.height);animId=null;}
+  if(parcaciklar.length>0)animId=requestAnimationFrame(animKonfeti);else{ctx.clearRect(0,0,cnv.width,cnv.height);animId=null;}
 }
-
-const renkler=["#c0392b","#1f618d","#1e8449","#d68910"];
-[["7","8","9"],["4","5","6"],["1","2","3"],["-","0","SİL"]].forEach((r,i)=>r.forEach(t=>{
-  let b=document.createElement("button");b.className="kbtn";b.textContent=t;
-  b.style.background=t=="SİL"?"#ff4757":(t=="-"?"#6c5ce7":renkler[i]);
-  b.onclick=()=>tus(t);document.getElementById("pad").appendChild(b);
-}));
 
 function modalAc(html){document.getElementById("mContent").innerHTML=html;document.getElementById("modal").style.display="flex";}
 function modalKapat(){d.magazaAcik=false;document.getElementById("modal").style.display="none";}
 
-function modSecAc(){
-  modalAc(`<h3>Oyun Modu Seç</h3>
-    <button class="btn" style="background:#0984e3;width:100%;margin:6px 0" onclick="isimAc('solo')">Tek Kişilik (Skor Tablosu)</button>
-    <button class="btn" style="background:#e17055;width:100%;margin:6px 0" onclick="isimAc('vs')">1v1 VS Modu (2 Kişi • 15sn)</button>
-    <button class="btn" style="background:#636e72;width:100%;margin-top:6px" onclick="modalKapat()">İptal</button>`);
+function oynaTikla(){if(prof.kayitli)modVeDersAc();else profilAc();}
+
+let geciciKad=prof.kademe||"Ortaokul",geciciSin=prof.sinif||"6. Sınıf";
+function profilAc(){
+  modalAc(`<h3>Oyuncu Profili</h3>
+    <input id="pAd" maxlength="20" placeholder="Name: (Max 20 karakter)" value="${prof.isim}">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
+      <button class="btn" id="k_İlkokul" style="background:#00b894" onclick="kadSec('İlkokul')">İlkokul</button>
+      <button class="btn" id="k_Ortaokul" style="background:#0984e3" onclick="kadSec('Ortaokul')">Ortaokul</button>
+      <button class="btn" id="k_Lise" style="background:#e17055" onclick="kadSec('Lise')">Lise</button>
+      <button class="btn" id="k_Üniversite" style="background:#6c5ce7" onclick="kadSec('Üniversite')">Üniversite</button>
+    </div>
+    <div id="sinifAlani" style="display:flex;flex-direction:column;gap:5px;margin:8px 0"></div>
+    <button class="btn" style="background:#ffd32a;color:#121225;width:100%;margin-top:6px" onclick="profilKaydet()">KAYDET</button>`);
+  kadSec(geciciKad);
+}
+function kadSec(k){
+  geciciKad=k;
+  ["İlkokul","Ortaokul","Lise","Üniversite"].forEach(x=>{let b=document.getElementById("k_"+x);if(b)b.classList.toggle("secili",x===k);});
+  const listeler={"İlkokul":["1. Sınıf","2. Sınıf","3. Sınıf","4. Sınıf"],"Ortaokul":["5. Sınıf","6. Sınıf","7. Sınıf","8. Sınıf"],"Lise":["9. Sınıf","10. Sınıf","11. Sınıf","12. Sınıf"],"Üniversite":["1. Sınıf (Üni)","2. Sınıf (Üni)","3. Sınıf (Üni)","4. Sınıf (Üni)"]};
+  let arr=listeler[k];if(!arr.includes(geciciSin))geciciSin=arr;
+  document.getElementById("sinifAlani").innerHTML=arr.map(s=>`<button class="btn ${geciciSin===s?'secili':''}" style="background:#121225;border:1px solid #0984e3;padding:8px" onclick="sinifSec('${s}')">${s}</button>`).join("");
+}
+function sinifSec(s){geciciSin=s;kadSec(geciciKad);}
+function profilKaydet(){
+  let ad=document.getElementById("pAd").value.trim().slice(0,20);
+  if(!ad)return alert("Lütfen adını yaz!");
+  prof={isim:ad,kademe:geciciKad,sinif:geciciSin,kayitli:true};
+  try{localStorage.setItem("hm_prof",JSON.stringify(prof));}catch(e){}
+  profYaz();modVeDersAc();
+}
+function dersListesiGetir(){
+  if(prof.kademe=="İlkokul")return [{ad:"Toplama & Çıkarma",r:"#e74c3c"},{ad:"Çarpım Tablosu",r:"#2980b9"},{ad:"Sayı Örüntüleri",r:"#27ae60"},{ad:"Günlük Problemler",r:"#f39c12"}];
+  if(prof.kademe=="Ortaokul")return [{ad:"Tam Sayılar & İşlem",r:"#e74c3c"},{ad:"Denklem & Cebir",r:"#2980b9"},{ad:"Oran & Yüzde",r:"#27ae60"},{ad:"Sayısal Mantık",r:"#f39c12"}];
+  if(prof.kademe=="Lise")return [{ad:"Üslü & Köklü Sayılar",r:"#e74c3c"},{ad:"Fonksiyon & Polinom",r:"#2980b9"},{ad:"Permütasyon & Olasılık",r:"#27ae60"},{ad:"TYT/AYT Mantık",r:"#f39c12"}];
+  return [{ad:"Lineer Cebir & Matris",r:"#e74c3c"},{ad:"Limit & Türev Temeli",r:"#2980b9"},{ad:"İstatistik & Olasılık",r:"#27ae60"},{ad:"ALES / İleri Mantık",r:"#f39c12"}];
 }
 
-function isimAc(mod){
+function modVeDersAc(){
+  let dersler=dersListesiGetir();
+  if(!dersler.some(x=>x.ad===d.ders))d.ders=dersler.ad;
+  modalAc(`<h3>Modlar & Dersler (${prof.sinif})</h3>
+    <div style="font-size:12px;color:#ffd32a;margin-bottom:4px">MODLAR (Zorluk Seç):</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">
+      <button class="btn ${d.zorluk=='Kolay'?'secili':''}" style="background:#00b894;padding:8px;font-size:12px" onclick="zorSec('Kolay')">Kolay</button>
+      <button class="btn ${d.zorluk=='Orta'?'secili':''}" style="background:#0984e3;padding:8px;font-size:12px" onclick="zorSec('Orta')">Orta</button>
+      <button class="btn ${d.zorluk=='Zor'?'secili':''}" style="background:#e17055;padding:8px;font-size:12px" onclick="zorSec('Zor')">Zor</button>
+      <button class="btn ${d.zorluk=='Çok Zor'?'secili':''}" style="background:#d63031;padding:8px;font-size:12px" onclick="zorSec('Çok Zor')">Çok Zor</button>
+    </div>
+    <div style="font-size:12px;color:#00cec9;margin-bottom:4px">DERS KATEGORİSİ SEÇ:</div>
+    <div class="kat-grid">
+      ${dersler.map(x=>`<div class="kat-kare ${d.ders===x.ad?'secili':''}" style="background:${x.r}" onclick="dersSec('${x.ad}')">${x.ad}</div>`).join("")}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button class="btn" style="background:#0984e3;flex:1" onclick="oyunBaslaMod('solo')">Tek Kişilik</button>
+      <button class="btn" style="background:#e17055;flex:1" onclick="oyunBaslaMod('vs')">1v1 VS (15sn)</button>
+    </div>
+    <button class="btn" style="background:#636e72;width:100%;margin-top:6px;padding:8px" onclick="modalKapat()">İptal</button>`);
+}
+function zorSec(z){d.zorluk=z;modVeDersAc();}
+function dersSec(ad){d.ders=ad;modVeDersAc();}
+
+function oyunBaslaMod(mod){
   d.mod=mod;
-  if(mod=="solo"){
-    modalAc(`<h3>Oyuncu Adı</h3><input id="adIn" maxlength="20" placeholder="Name: (Max 20 karakter)" value="${d.isim=='Oyuncu'?'':d.isim}"><button class="btn" style="background:#00b894;width:48%" onclick="adOnay()">Başla</button> <button class="btn" style="background:#636e72;width:48%" onclick="modalKapat()">İptal</button>`);
-  }else{
+  if(mod=="solo"){modalKapat();document.getElementById("menu").style.display="none";document.getElementById("oyun").style.display="block";baslat();}
+  else{
     modalAc(`<h3>1v1 VS Oyuncuları</h3>
-      <input id="ad1" maxlength="20" placeholder="1. Oyuncu Adı (Max 20)">
+      <input id="ad1" maxlength="20" value="${prof.isim}" placeholder="1. Oyuncu Adı">
       <input id="ad2" maxlength="20" placeholder="2. Oyuncu Adı (Max 20)">
       <button class="btn" style="background:#00b894;width:48%" onclick="vsOnay()">Kapışmayı Başlat</button> <button class="btn" style="background:#636e72;width:48%" onclick="modalKapat()">İptal</button>`);
   }
 }
-
-function adOnay(){
-  let v=document.getElementById("adIn").value.trim().slice(0,20);if(!v)return;
-  d.isim=v;modalKapat();document.getElementById("menu").style.display="none";document.getElementById("oyun").style.display="block";baslat();
-}
-
 function vsOnay(){
   let a1=document.getElementById("ad1").value.trim().slice(0,20),a2=document.getElementById("ad2").value.trim().slice(0,20);
   if(!a1||!a2)return;
@@ -148,69 +195,118 @@ async function skorAc(){
   try{
     let res=await(await fetch(DB)).json(),map={};
     if(res)Object.values(res).forEach(v=>{if(v&&v.isim&&(!map[v.isim]||v.skor>map[v.isim]))map[v.isim]=v.skor;});
-    let arr=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    let h=arr.length?arr.map((x,i)=>`<div style="display:flex;justify-content:space-between;margin:6px 0;font-weight:bold"><span>${i+1}. ${x[0]}</span><span style="color:#00b894">${x[1]} P</span></div>`).join(""):"<p>Henüz skor yok!</p>";
+    let arr=Object.entries(map).sort((a,b)=>b-a).slice(0,10);
+    let h=arr.length?arr.map((x,i)=>`<div style="display:flex;justify-content:space-between;margin:6px 0;font-weight:bold"><span>${i+1}. ${x}</span><span style="color:#00b894">${x} P</span></div>`).join(""):"<p>Henüz skor yok!</p>";
     modalAc(`<h3>Skor Tablosu (Top 10)</h3>${h}<br><button class="btn" style="background:#6c5ce7;width:100%" onclick="modalKapat()">Kapat</button>`);
   }catch(e){modalAc(`<h3>Hata</h3><p>İnterneti kontrol et</p><button class="btn" onclick="modalKapat()">Kapat</button>`);}
 }
+
 function guncelle(){
   document.getElementById("ustTxt").textContent=`Can:${d.can} P:${d.puan} S:${d.svy}`;
   document.getElementById("altinTxt").textContent=`Altın:${d.altin}`;
   document.getElementById("mRekor").textContent=`EN YÜKSEK SKORUN: ${d.rekor}`;
   document.getElementById("dBtn").textContent=`Dondur (${d.jd})`;
   document.getElementById("sBtn").textContent=`+10sn (${d.js})`;
+  document.getElementById("eBtn").textContent=`50/50 (${d.je})`;
   document.getElementById("aBtn").textContent=d.mod=="vs"?`Atla (${d.vsAtla})`:`Atla (${d.ja})`;
-  document.getElementById("cevap").textContent=d.girdi||"?";
+}
+
+function soruUret(){
+  let zTaban={"Kolay":1,"Orta":2,"Zor":3,"Çok Zor":4}[d.zorluk]||2;
+  let kTaban={"İlkokul":0,"Ortaokul":1,"Lise":2,"Üniversite":3}[prof.kademe]||1;
+  let guc=zTaban+kTaban+(d.svy-1); // Seviye ve zorluk arttikca guc katlanir, asla 2+2 gelmez!
+  let s1,s2,cvp,metin,simge="M";
+
+  if(guc<=2){
+    s1=4+Math.floor(Math.random()*12);s2=3+Math.floor(Math.random()*11);
+    if(Math.random()<.5){cvp=s1+s2;metin=`${s1} + ${s2} = ?`;simge="+";}
+    else{cvp=s1*s2;metin=`${s1} x ${s2} = ?`;simge="x";}
+  }else if(guc<=4){
+    let tip=Math.floor(Math.random()*3);
+    if(tip===0){s1=14+Math.floor(Math.random()*25);s2=12+Math.floor(Math.random()*18);cvp=s1*s2;metin=`${s1} x ${s2} = ?`;simge="x";}
+    else if(tip===1){let a=3+Math.floor(Math.random()*6),x=4+Math.floor(Math.random()*9),b=5+Math.floor(Math.random()*12);cvp=x;metin=`${a}x + ${b} = ${a*x+b} ise x kaçtır?`;}
+    else{let a=2+Math.floor(Math.random()*5),b=3+Math.floor(Math.random()*6);cvp=a*5+b;metin=`Bir sepette ${a*10} ceviz var. Yarısının ${b} fazlası kaçtır?`;}
+  }else if(guc<=6){
+    let tip=Math.floor(Math.random()*4);
+    if(tip===0){s1=28+Math.floor(Math.random()*45);s2=24+Math.floor(Math.random()*55);cvp=s1*s2;metin=`${s1} x ${s2} işleminin sonucu kaçtır?`;simge="x";}
+    else if(tip===1){let a=5+Math.floor(Math.random()*8),b=3+Math.floor(Math.random()*6);cvp=a*b;metin=`x + y = ${a+b} ve x - y = ${a-b} ise x . y çarpımı kaçtır?`;}
+    else if(tip===2){let n=4+Math.floor(Math.random()*7);cvp=2*n+3;metin=`Ardışık 3 tek sayının toplamı ${3*(2*n+1)} ise en büyük sayı kaçtır?`;}
+    else{let h=60+Math.floor(Math.random()*5)*10,t=2+Math.floor(Math.random()*4);cvp=h*t*2;metin=`Saatte ${h} km hızla ${t} saatte yolun yarısını giden aracın tüm yolu kaç km?`;}
+  }else{
+    // SEVIYE 4 / COK ZOR / LISE-UNI AGIR MANTIK PROBLEMLERI
+    let tip=Math.floor(Math.random()*4);
+    if(tip===0){s1=45+Math.floor(Math.random()*50);s2=52+Math.floor(Math.random()*45);cvp=s1*s2;metin=`${s1} x ${s2} çarpımının sonucu kaçtır?`;simge="x";}
+    else if(tip===1){let k=3+Math.floor(Math.random()*6);cvp=k*k+1;metin=`f(x) = x² + 1 fonksiyonunda f(${k}) değeri kaçtır?`;}
+    else if(tip===2){let a=4+Math.floor(Math.random()*5);cvp=a*(a-1)/2;metin=`${a} kişilik bir grupta herkes birbiriyle 1 kez tokalaşırsa toplam kaç tokalaşma olur?`;}
+    else{let b=3+Math.floor(Math.random()*5);cvp=b*32-1;metin=`${b-1}, ${b*2-1}, ${b*4-1}, ${b*8-1}, ${b*16-1}, ? Örüntüsünde sıradaki sayı kaçtır?`;}
+  }
+
+  // ZEKICE YAKLASIM YAPILABILEN A-B-C-D SIKLARI URET
+  let set=new Set([cvp]);
+  while(set.size<4){
+    let fark=(Math.floor(Math.random()*4)+1)*(Math.abs(cvp)>100?10:2);
+    let aday=cvp+(Math.random()<.5?fark:-fark);
+    if(aday!==cvp&&aday>=0)set.add(aday);
+  }
+  let arr=Array.from(set).sort(()=>Math.random()-.5);
+  return {metin,cvp,simge,siklar:arr};
 }
 
 function yeniSoru(){
   d.aktif=true;
-  let ys=d.puan<50?1:(d.puan<100?2:3);
+  let ys=d.puan<40?1:(d.puan<90?2:(d.puan<150?3:4));
   if(ys>d.svy)d.svy=ys;
-  d.kalan=d.max=(d.mod=="vs"?15:7+(d.svy-1)*3);
-  d.donma=0;d.girdi="";
+  d.kalan=d.max=(d.mod=="vs"?15:12);
+  d.donma=0;
 
-  let s1,s2,isl;
-  if(d.svy===1){
-    isl=Math.random()<0.5?"+":"-";
-    s1=1+Math.floor(Math.random()*10);
-    s2=1+Math.floor(Math.random()*10);
-  }else if(d.svy===2){
-    isl=["+","-","*"][Math.floor(Math.random()*3)];
-    if(isl==="*"){s1=2+Math.floor(Math.random()*8);s2=2+Math.floor(Math.random()*8);}
-    else{s1=10+Math.floor(Math.random()*16);s2=10+Math.floor(Math.random()*16);}
-  }else{
-    isl=["+","-","*"][Math.floor(Math.random()*3)];
-    if(isl==="*"){s1=11+Math.floor(Math.random()*15);s2=11+Math.floor(Math.random()*15);}
-    else{s1=25+Math.floor(Math.random()*36);s2=20+Math.floor(Math.random()*31);}
-  }
-
-  d.dc=isl=="+"?s1+s2:(isl=="-"?s1-s2:s1*s2);
-  d.simge=isl=="*"?"x":isl;
-  d.soru=`${s1} ${d.simge} ${s2}`;
+  let q=soruUret();
+  d.dc=q.cvp;d.simge=q.simge;d.soru=q.metin;d.siklar=q.siklar;
   d.renk=uno[Math.floor(Math.random()*4)];
+
+  let sEl=document.getElementById("soru");
+  sEl.style.fontSize=q.metin.length>55?"14px":(q.metin.length>30?"16px":"21px");
   document.getElementById("card").style.background=d.renk;
-  document.getElementById("soru").textContent=d.soru;
+  document.getElementById("dersEtiket").textContent=`${d.ders} • ${d.zorluk}`;
+  sEl.textContent=d.soru;
   document.getElementById("k1").textContent=document.getElementById("k2").textContent=d.simge;
+
+  const harfler=["A","B","C","D"];
+  document.getElementById("sikGrid").innerHTML=d.siklar.map((val,i)=>`<button class="sbtn" id="sik_${i}" style="background:${sikRenk[i]}" onclick="sikSec(${val},${i})">${harfler[i]}) ${val}</button>`).join("");
   guncelle();
 }
 
+function sikSec(val,idx){
+  if(!d.aktif||d.dur||d.can<=0)return;
+  if(val===d.dc){
+    d.topSure+=(d.max-d.kalan);d.dogru++;d.kombo++;
+    let carpan=d.ciftPuan>0?2:1;if(d.ciftPuan>0)d.ciftPuan--;
+    let k=(10+(d.kombo-1)*2)*carpan;
+    d.puan+=k;if(d.mod=="solo")d.altin+=10*carpan;
+    document.getElementById("msg").textContent=`Doğru! +${k} Puan${carpan==2?' (2X BONUS!)':''}`;
+    yeniSoru();
+  }else{
+    d.yanlis++;d.can--;d.kombo=0;
+    if(d.can<=0)bitti(`Doğru şık: ${d.dc}`);
+    else{document.getElementById("msg").textContent=`Yanlış! Doğrusu: ${d.dc}`;yeniSoru();}
+  }
+}
+
 function baslat(){
-  d.puan=0;d.svy=1;d.kombo=0;d.dur=false;d.dogru=0;d.yanlis=0;d.bos=0;d.topSure=0;
+  d.puan=0;d.svy=1;d.kombo=0;d.dur=false;d.dogru=0;d.yanlis=0;d.bos=0;d.topSure=0;d.ciftPuan=0;
   document.getElementById("karneKutu").style.display="none";
-  document.getElementById("pBtn").textContent="II";document.getElementById("gBtn").style.display="block";document.getElementById("tBtn").style.display="none";
+  document.getElementById("pBtn").textContent="II";document.getElementById("tBtn").style.display="none";
   if(d.mod=="vs"){
     d.can=3;d.vsAtla=3;
-    document.getElementById("dBtn").style.display="none";document.getElementById("sBtn").style.display="none";document.getElementById("magBtn").style.display="none";
+    ["dBtn","sBtn","eBtn","magBtn"].forEach(id=>document.getElementById(id).style.display="none");
     let aktifAd=d.vsSira==1?d.p1.isim:d.p2.isim;
     document.getElementById("vsBanner").style.display="block";
     document.getElementById("vsBanner").textContent=`1v1 VS (15sn) | Sıra: ${aktifAd} (${d.vsSira}/2)`;
     document.getElementById("msg").textContent=`${aktifAd} Başladı! (3 Can | 3 Atla)`;
   }else{
     d.can=3+d.jc;
-    document.getElementById("dBtn").style.display="inline-block";document.getElementById("sBtn").style.display="inline-block";document.getElementById("magBtn").style.display="inline-block";
+    ["dBtn","sBtn","eBtn","magBtn"].forEach(id=>document.getElementById(id).style.display="inline-block");
     document.getElementById("vsBanner").style.display="none";
-    document.getElementById("msg").textContent=`İyi şanslar ${d.isim}!`;
+    document.getElementById("msg").textContent=`İyi şanslar ${prof.isim}!`;
   }
   yeniSoru();
 }
@@ -218,135 +314,88 @@ function baslat(){
 function bitti(sebep){
   if(d.magazaAcik)modalKapat();
   d.aktif=false;d.kombo=0;
-  document.getElementById("card").style.background="#e74c3c";document.getElementById("soru").textContent="OYUN BİTTİ";
-  document.getElementById("cevap").textContent=d.puan+" P";
+  document.getElementById("sikGrid").innerHTML="";
+  document.getElementById("card").style.background="#e74c3c";
+  document.getElementById("soru").style.fontSize="20px";
+  document.getElementById("soru").textContent=`OYUN BİTTİ\n${d.puan} PUAN`;
   if(d.mod=="vs"){
     let ort=d.dogru>0?(d.topSure/d.dogru):99;
     if(d.vsSira==1){
-      d.p1={isim:d.p1.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};
-      d.vsSira=2;
+      d.p1={isim:d.p1.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};d.vsSira=2;
       modalAc(`<h3>${d.p1.isim} Turunu Bitirdi!</h3><p>Puan: <b>${d.p1.puan} P</b> (Ort. Hız: ${ort<90?ort.toFixed(1)+'sn':'-'})<br>Doğru: ${d.p1.dogru} | Yanlış: ${d.p1.yanlis} | Boş: ${d.p1.bos}</p><p style="color:#ffd32a">Sıra <b>${d.p2.isim}</b> oyuncusunda!</p><button class="btn" style="background:#00b894;width:100%" onclick="modalKapat();baslat()">${d.p2.isim} Başlasın</button>`);
       return;
     }else{
       d.p2={isim:d.p2.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};
       let hizNot="";
       if(d.p1.ortSure<90&&d.p2.ortSure<90&&Math.abs(d.p1.ortSure-d.p2.ortSure)>0.1){
-        let hizli=d.p1.ortSure<d.p2.ortSure?d.p1:d.p2;
-        let yavas=d.p1.ortSure<d.p2.ortSure?d.p2:d.p1;
-        let hediyeler=[["Zaman Dondurucu (5sn)",()=>d.jd++],["+10 Saniye Jokeri",()=>d.js++],["Soru Atla Jokeri",()=>d.ja++]];
-        let secilen=hediyeler[Math.floor(Math.random()*hediyeler.length)];
-        secilen[1]();
+        let hizli=d.p1.ortSure<d.p2.ortSure?d.p1:d.p2,yavas=d.p1.ortSure<d.p2.ortSure?d.p2:d.p1;
+        let hediyeler=[["Zaman Dondurucu (5sn)",()=>d.jd++],["+10 Saniye Jokeri",()=>d.js++],["50/50 Şık Eleme",()=>d.je++],["Soru Atla Jokeri",()=>d.ja++]];
+        let secilen=hediyeler[Math.floor(Math.random()*hediyeler.length)];secilen();
         yavas.puan=Math.max(0,yavas.puan-10);
-        hizNot=`<div style="background:#0984e333;padding:6px;border-radius:8px;font-size:11px;margin-bottom:8px">⚡ En Hızlı: <b>${hizli.isim}</b> (${hizli.ortSure.toFixed(1)}sn) -> Mağazadan Bedava <b>${secilen[0]}</b>!<br>🐢 En Yavaş: <b>${yavas.isim}</b> (${yavas.ortSure.toFixed(1)}sn) -> <b>-10 Skor</b></div>`;
+        hizNot=`<div style="background:#0984e333;padding:6px;border-radius:8px;font-size:11px;margin-bottom:8px">⚡ En Hızlı: <b>${hizli.isim}</b> (${hizli.ortSure.toFixed(1)}sn) -> Bedava <b>${secilen}</b>!<br>🐢 En Yavaş: <b>${yavas.isim}</b> (${yavas.ortSure.toFixed(1)}sn) -> <b>-10 Skor</b></div>`;
       }
       let htmlSonuc="";
       if(d.p1.puan!==d.p2.puan){
         konfetiPatlat();
-        let kaz=d.p1.puan>d.p2.puan?d.p1:d.p2;
-        let kay=d.p1.puan>d.p2.puan?d.p2:d.p1;
-        let kazYeniSkor=kaz.puan+25;
-        let kayYeniSkor=Math.max(0,kay.puan-30);
-        d.altin+=50;
-        if(kazYeniSkor>d.rekor)d.rekor=kazYeniSkor;
-        skorKaydet(kaz.isim,kazYeniSkor);
-        htmlSonuc=`${hizNot}
-          <div style="background:#00b89422;border:2px solid #00b894;border-radius:10px;padding:10px;margin-bottom:8px">
-            <h2 style="color:#ffd32a;margin:0">🎉 KAZANDIN! 🎉</h2>
-            <div style="font-size:16px;font-weight:bold;margin:4px 0">${kaz.isim}</div>
-            <div style="color:#00b894;font-weight:bold;font-size:12px">${kaz.puan} + 25 Skor = ${kazYeniSkor} P | +50 Altın 💰</div>
-            <div style="font-size:11px;color:#dfe6e9">Doğru: ${kaz.dogru} | Yanlış: ${kaz.yanlis} | Boş: ${kaz.bos}</div>
-          </div>
-          <div style="background:#ff475722;border:2px solid #ff4757;border-radius:10px;padding:10px">
-            <h3 style="color:#ff7675;margin:0;font-size:14px">KAYBETTİN BİR DAHAKİ SEFERE</h3>
-            <div style="font-size:15px;font-weight:bold;margin:4px 0">${kay.isim}</div>
-            <div style="color:#ff7675;font-weight:bold;font-size:12px">${kay.puan} - 30 Skor = ${kayYeniSkor} P | 0 Altın</div>
-            <div style="font-size:11px;color:#dfe6e9">Doğru: ${kay.dogru} | Yanlış: ${kay.yanlis} | Boş: ${kay.bos}</div>
-          </div>`;
-      }else{
-        htmlSonuc=`${hizNot}<h2 style="color:#ffd32a">🤝 BERABERE!</h2><p>${d.p1.isim}: ${d.p1.puan} P | ${d.p2.isim}: ${d.p2.puan} P</p>`;
-      }
+        let kaz=d.p1.puan>d.p2.puan?d.p1:d.p2,kay=d.p1.puan>d.p2.puan?d.p2:d.p1;
+        let kazYeniSkor=kaz.puan+25,kayYeniSkor=Math.max(0,kay.puan-30);
+        d.altin+=50;if(kazYeniSkor>d.rekor)d.rekor=kazYeniSkor;skorKaydet(kaz.isim,kazYeniSkor);
+        htmlSonuc=`${hizNot}<div style="background:#00b89422;border:2px solid #00b894;border-radius:10px;padding:10px;margin-bottom:8px"><h2 style="color:#ffd32a;margin:0">🎉 KAZANDIN! 🎉</h2><div style="font-size:16px;font-weight:bold;margin:4px 0">${kaz.isim}</div><div style="color:#00b894;font-weight:bold;font-size:12px">${kaz.puan} + 25 Skor = ${kazYeniSkor} P | +50 Altın 💰</div><div style="font-size:11px">Doğru: ${kaz.dogru} | Yanlış: ${kaz.yanlis} | Boş: ${kaz.bos}</div></div><div style="background:#ff475722;border:2px solid #ff4757;border-radius:10px;padding:10px"><h3 style="color:#ff7675;margin:0;font-size:14px">KAYBETTİN BİR DAHAKİ SEFERE</h3><div style="font-size:15px;font-weight:bold;margin:4px 0">${kay.isim}</div><div style="color:#ff7675;font-weight:bold;font-size:12px">${kay.puan} - 30 Skor = ${kayYeniSkor} P | 0 Altın</div><div style="font-size:11px">Doğru: ${kay.dogru} | Yanlış: ${kay.yanlis} | Boş: ${kay.bos}</div></div>`;
+      }else htmlSonuc=`${hizNot}<h2 style="color:#ffd32a">🤝 BERABERE!</h2><p>${d.p1.isim}: ${d.p1.puan} P | ${d.p2.isim}: ${d.p2.puan} P</p>`;
       modalAc(`${htmlSonuc}<br><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">Tamam</button>`);
-      document.getElementById("msg").textContent="VS Kapışması Tamamlandı!";
-      d.vsSira=1;
+      document.getElementById("msg").textContent="VS Kapışması Tamamlandı!";d.vsSira=1;
     }
   }else{
-    let kayipSayisi=d.yanlis+d.bos;
-    let ceza=kayipSayisi>d.dogru?10:0;
-    let finalSkor=Math.max(0,d.puan-ceza);
-    if(finalSkor>d.rekor)d.rekor=finalSkor;
-    skorKaydet(d.isim,finalSkor);
-    document.getElementById("msg").textContent=`${sebep} | Rekor: ${d.rekor}`;
-    let cezaSatir=ceza>0?`<br><span style="color:#ff4757">Kayıp Soru Fazla (${kayipSayisi} > ${d.dogru}): -10 Ceza -> Net: <b>${finalSkor} P</b></span>`:"";
+    let kayipSayisi=d.yanlis+d.bos,ceza=kayipSayisi>d.dogru?10:0,finalSkor=Math.max(0,d.puan-ceza);
+    if(finalSkor>d.rekor)d.rekor=finalSkor;skorKaydet(prof.isim,finalSkor);
+    document.getElementById("msg").textContent=`${sebep} | Ulaşılan: Seviye ${d.svy}`;
+    let cezaSatir=ceza>0?`<br><span style="color:#ff4757">Kayıp Soru Fazla (${kayipSayisi}>${d.dogru}): -10 Ceza -> Net: <b>${finalSkor} P</b></span>`:"";
     let k=document.getElementById("karneKutu");k.style.display="block";
-    k.innerHTML=`<b>SONUÇ KARNESİ</b><br>Kazanılan: <b style="color:#ffd32a">${d.puan} P</b> | <span style="color:#00b894">Doğru: ${d.dogru}</span> | <span style="color:#ff7675">Yanlış: ${d.yanlis}</span> | <span style="color:#fdcb6e">Boş: ${d.bos}</span>${cezaSatir}`;
+    k.innerHTML=`<b>SONUÇ TABLOSU (Seviye ${d.svy})</b><br>Skor: <b style="color:#ffd32a">${d.puan} P</b> | <span style="color:#00b894">Doğru: ${d.dogru}</span> | <span style="color:#ff7675">Yanlış: ${d.yanlis}</span> | <span style="color:#fdcb6e">Boş: ${d.bos}</span>${cezaSatir}`;
   }
-  document.getElementById("gBtn").style.display="none";document.getElementById("tBtn").style.display="block";guncelle();
-}
-
-function tus(t){
-  if(!d.aktif||d.dur||d.can<=0)return;
-  if(t=="SİL")d.girdi=d.girdi.slice(0,-1);
-  else if(t=="-")d.girdi=d.girdi.startsWith("-")?d.girdi.slice(1):"-"+d.girdi;
-  else d.girdi+=t;guncelle();
-}
-
-function kontrol(){
-  if(!d.aktif||d.dur||d.can<=0||d.girdi===""||d.girdi==="-")return;
-  if(parseInt(d.girdi)===d.dc){
-    d.topSure+=(d.max-d.kalan);d.dogru++;d.kombo++;let k=10+(d.kombo-1)*2;d.puan+=k;if(d.mod=="solo")d.altin+=10;
-    document.getElementById("msg").textContent=`Harika! +${k} Puan`;yeniSoru();
-  }else{
-    d.yanlis++;d.can--;d.kombo=0;if(d.can<=0)bitti(`Doğrusu ${d.dc} idi`);
-    else{document.getElementById("msg").textContent=`Yanlış! Doğrusu ${d.dc} idi`;yeniSoru();}
-  }
+  document.getElementById("tBtn").style.display="block";guncelle();
 }
 
 function joker(t){
   if(!d.aktif||d.dur||d.can<=0)return;
   if(t=="d"&&d.jd>0){d.jd--;d.donma+=5;document.getElementById("msg").textContent="Zaman Dondu! (5s)";guncelle();}
   else if(t=="s"&&d.js>0){d.js--;d.kalan+=10;d.max=Math.max(d.max,d.kalan);document.getElementById("msg").textContent="+10sn Eklendi!";guncelle();}
-  else if(t=="a"){
-    if(d.mod=="vs"){
-      if(d.vsAtla<=0){document.getElementById("msg").textContent="VS Modunda Atla hakkın bitti!";return;}
-      d.vsAtla--;
-    }else{
-      if(d.ja<=0){document.getElementById("msg").textContent="Atla hakkın kalmadı! Mağazadan al (70 Altın)";return;}
-      d.ja--;
-    }
-    d.bos++;document.getElementById("msg").textContent=`Atlandı! (Cevap ${d.dc})`;yeniSoru();
-  }else{document.getElementById("msg").textContent="Joker kalmadı! Mağazadan al";}
+  else if(t=="e"&&d.je>0){
+    d.je--;let silinen=0;
+    d.siklar.forEach((v,i)=>{if(v!==d.dc&&silinen<2){let b=document.getElementById("sik_"+i);if(b){b.style.visibility="hidden";silinen++;}}});
+    document.getElementById("msg").textContent="50/50: İki yanlış şık elendi!";guncelle();
+  }else if(t=="a"){
+    if(d.mod=="vs"){if(d.vsAtla<=0){document.getElementById("msg").textContent="VS Atla hakkın bitti!";return;}d.vsAtla--;}
+    else{if(d.ja<=0){document.getElementById("msg").textContent="Atla hakkın bitti! Mağazadan al (70 Altın)";return;}d.ja--;}
+    d.bos++;document.getElementById("msg").textContent=`Atlandı! (Doğrusu: ${d.dc})`;yeniSoru();
+  }else document.getElementById("msg").textContent="Joker kalmadı! Mağazadan al";
 }
 
-function duraklat(){
-  if(!d.aktif||d.can<=0)return;d.dur=!d.dur;
-  document.getElementById("pBtn").textContent=d.dur?">":"II";
-  document.getElementById("soru").textContent=d.dur?"DURAKLATILDI":d.soru;
-}
-
+function duraklat(){if(!d.aktif||d.can<=0)return;d.dur=!d.dur;document.getElementById("pBtn").textContent=d.dur?">":"II";document.getElementById("soru").textContent=d.dur?"DURAKLATILDI":d.soru;}
 function geriAc(){
   let esk=d.dur;d.dur=true;
-  if(d.mod=="vs"){
-    modalAc(`<h3>VS'den Çık</h3><p>Mevcut kapışma iptal edilsin mi?</p><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">Menüye Dön</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">İptal</button>`);
-  }else{
-    modalAc(`<h3>Menüye Dön</h3><p>${d.isim} - Puan: ${d.puan}</p><button class="btn" style="background:#00b894;width:100%;margin-bottom:8px" onclick="geriSec(true)">Skoru Kaydet</button><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">Kaydetme</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">İptal</button>`);
-  }
+  if(d.mod=="vs")modalAc(`<h3>VS'den Çık</h3><p>Mevcut kapışma iptal edilsin mi?</p><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">Menüye Dön</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">İptal</button>`);
+  else modalAc(`<h3>Menüye Dön</h3><p>${prof.isim} - Puan: ${d.puan}</p><button class="btn" style="background:#00b894;width:100%;margin-bottom:8px" onclick="geriSec(true)">Skoru Kaydet</button><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">Kaydetme</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">İptal</button>`);
 }
-function geriSec(k){
-  if(k&&d.mod=="solo"){if(d.puan>d.rekor)d.rekor=d.puan;skorKaydet(d.isim,d.puan);}
-  d.aktif=false;d.dur=false;modalKapat();guncelle();
-  document.getElementById("oyun").style.display="none";document.getElementById("menu").style.display="block";
-}
+function geriSec(k){if(k&&d.mod=="solo"){if(d.puan>d.rekor)d.rekor=d.puan;skorKaydet(prof.isim,d.puan);}d.aktif=false;d.dur=false;modalKapat();guncelle();document.getElementById("oyun").style.display="none";document.getElementById("menu").style.display="block";}
+
 function magazaAc(){
   d.magazaAcik=true;
-  modalAc(`<h3>Mağaza (Altın: ${d.altin})</h3>
-    <div style="font-size:11px;color:#ffd32a;margin-bottom:6px">${d.aktif?'⚠️ Dikkat: Süre akmaya devam ediyor!':''}</div>
-    <button class="btn" style="background:#0984e3;width:100%;margin:4px 0" onclick="al('d',30)">Dondur (5s) - 30 Altın</button>
-    <button class="btn" style="background:#6c5ce7;width:100%;margin:4px 0" onclick="al('s',50)">+10sn Süre - 50 Altın</button>
-    <button class="btn" style="background:#e94560;width:100%;margin:4px 0" onclick="al('c',60)">Kalıcı +1 Can - 60 Altın</button>
-    <button class="btn" style="background:#e17055;width:100%;margin:4px 0" onclick="al('a',70)">Soru Atla (1x) - 70 Altın</button>
-    <br><button class="btn" style="background:#00b894;width:100%;margin-top:6px" onclick="modalKapat()">Kapat</button>`);
+  modalAc(`<h3>Genişletilmiş Mağaza (Altın: ${d.altin})</h3>
+    <div style="font-size:11px;color:#ffd32a;margin-bottom:5px">${d.aktif?'⚠️ Dikkat: Süre akmaya devam ediyor!':''}</div>
+    <button class="btn" style="background:#0984e3;width:100%;margin:3px 0" onclick="al('d',30)">❄️ Zaman Dondur (5s) - 30 Altın</button>
+    <button class="btn" style="background:#00b894;width:100%;margin:3px 0" onclick="al('e',40)">✂️ 50/50 Şık Eleme (1x) - 40 Altın</button>
+    <button class="btn" style="background:#6c5ce7;width:100%;margin:3px 0" onclick="al('s',50)">⏱️ +10sn Ekstra Süre - 50 Altın</button>
+    <button class="btn" style="background:#e94560;width:100%;margin:3px 0" onclick="al('c',60)">❤️ Kalıcı +1 Can - 60 Altın</button>
+    <button class="btn" style="background:#e17055;width:100%;margin:3px 0" onclick="al('a',70)">⏭️ Soru Atla (1x) - 70 Altın</button>
+    <button class="btn" style="background:#fdcb6e;color:#121225;width:100%;margin:3px 0" onclick="al('2x',80)">⚡ 3 Soru Boyunca 2X Puan - 80 Altın</button>
+    <br><button class="btn" style="background:#636e72;width:100%;margin-top:6px" onclick="modalKapat()">Kapat</button>`);
 }
-function al(t,f){if(d.altin<f)return alert("Yetersiz altın!");d.altin-=f;if(t=="d")d.jd++;else if(t=="s")d.js++;else if(t=="a")d.ja++;else{d.jc++;if(d.can>0)d.can++;}guncelle();if(d.magazaAcik)magazaAc();}
+function al(t,f){
+  if(d.altin<f)return alert("Yetersiz altın!");d.altin-=f;
+  if(t=="d")d.jd++;else if(t=="s")d.js++;else if(t=="e")d.je++;else if(t=="a")d.ja++;else if(t=="2x")d.ciftPuan+=3;else{d.jc++;if(d.can>0)d.can++;}
+  guncelle();if(d.magazaAcik)magazaAc();
+}
 
 setInterval(()=>{
   if(d.aktif&&!d.dur&&d.can>0){
