@@ -125,11 +125,11 @@ async def main(page: ft.Page):
 
         def sinif_yenile():
             sinif_kolon.controls.clear()
-            liste = sinif_haritasi[secili_kad]
-            if secili_sin not in liste:
-                secili_sin = liste
+            liste = sinif_haritasi[secili_kad[0]]
+            if secili_sin[0] not in liste:
+                secili_sin[0] = liste[0]
             for s in liste:
-                aktif_mi = (secili_sin == s)
+                aktif_mi = (secili_sin[0] == s)
                 sinif_kolon.controls.append(
                     ft.Button(
                         s,
@@ -141,7 +141,7 @@ async def main(page: ft.Page):
                 )
 
         def kad_sec(k):
-            secili_kad = k
+            secili_kad[0] = k
             sinif_yenile()
             page.update()
 
@@ -160,7 +160,7 @@ async def main(page: ft.Page):
                 uyari_txt.value = "Lutfen adini yaz!"
                 page.update()
                 return
-            prof.update({"isim": ad, "kademe": secili_kad, "sinif": secili_sin, "kayitli": True})
+            prof.update({"isim": ad, "kademe": secili_kad[0], "sinif": secili_sin[0], "kayitli": True})
             try:
                 await page.client_storage.set_async("hm_prof", prof)
             except Exception:
@@ -195,8 +195,8 @@ async def main(page: ft.Page):
 
     def mod_ve_ders_ac():
         dersler = ders_listesi_getir()
-        if not any(x == d["ders"] for x in dersler):
-            d["ders"] = dersler
+        if not any(x[0] == d["ders"] for x in dersler):
+            d["ders"] = dersler[0][0]
 
         durum_txt = ft.Text(f"Mod: {d['zorluk']} | Ders: {d['ders']}", size=11, color="#ffd32a", weight=ft.FontWeight.BOLD)
 
@@ -220,12 +220,12 @@ async def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         kat_row1 = ft.Row([
-            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
-            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
+            ft.Button(dersler[0][0], bgcolor=dersler[0][1], color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler[0][0])),
+            ft.Button(dersler[1][0], bgcolor=dersler[1][1], color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler[1][0])),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
         kat_row2 = ft.Row([
-            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
-            ft.Button(dersler, bgcolor=dersler, color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler)),
+            ft.Button(dersler[2][0], bgcolor=dersler[2][1], color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler[2][0])),
+            ft.Button(dersler[3][0], bgcolor=dersler[3][1], color="white", width=116, height=48, on_click=lambda _: ders_sec(dersler[3][0])),
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         dlg = ft.AlertDialog(
@@ -351,8 +351,8 @@ async def main(page: ft.Page):
         )
     sik_kolon = ft.Column(
         [
-            ft.Row([sik_butonlar, sik_butonlar], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
-            ft.Row([sik_butonlar, sik_butonlar], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
+            ft.Row([sik_butonlar[0], sik_butonlar[1]], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
+            ft.Row([sik_butonlar[2], sik_butonlar[3]], alignment=ft.MainAxisAlignment.CENTER, spacing=8),
         ],
         spacing=8,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -479,9 +479,9 @@ async def main(page: ft.Page):
     def soru_uret():
         if d["ders"] not in ("Matematik", "Ileri Matematik", "Zeka & Mantik", "TYT Mantik", "ALES Mantik"):
             q = random.choice(sozel_havuz())
-            siklar = list(q)
+            siklar = list(q[2])
             random.shuffle(siklar)
-            return q, q, d["ders"], siklar
+            return q[0], q[1], d["ders"][0], siklar
 
         z_taban = {"Kolay": 1, "Orta": 2, "Zor": 3, "Cok Zor": 4}.get(d["zorluk"], 2)
         k_taban = {"Ilkokul": 0, "Ortaokul": 1, "Lise": 2, "Universite": 3}.get(prof["kademe"], 1)
