@@ -1,4 +1,4 @@
-import flet as ft, random, asyncio, json, urllib.request, gc
+ import flet as ft, random, asyncio, json, urllib.request, gc
 
 FIREBASE_URL = "https://" + "hizli-matematik-10492-default-rtdb" + ".europe-west1.firebasedatabase.app"
 
