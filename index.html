@@ -334,3 +334,66 @@ function baslat(){
   }
   yeniSoru();
 }
+function bitti(sebep){
+  if(d.magazaAcik)modalKapat();
+  let t=L();d.aktif=false;d.kombo=0;
+  document.getElementById("sikGrid").innerHTML="";
+  document.getElementById("card").style.background="#e74c3c";
+  document.getElementById("soru").style.fontSize="20px";
+  document.getElementById("soru").textContent=t.bitti+"\n"+d.puan+" "+t.puan;
+  if(d.mod=="vs"){
+    let ort=d.dogru>0?(d.topSure/d.dogru):99;
+    if(d.vsSira==1){
+      d.p1={isim:d.p1.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};d.vsSira=2;
+      modalAc(`<h3>${d.p1.isim}</h3><p>${d.p1.puan} ${t.puan}</p><p style="color:#ffd32a">${t.sira}: <b>${d.p2.isim}</b></p><button class="btn" style="background:#00b894;width:100%" onclick="modalKapat();baslat()">${d.p2.isim} - ${t.baslasin}</button>`);
+      return;
+    }
+    d.p2={isim:d.p2.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};
+    if(d.p1.puan!==d.p2.puan){
+      konfetiPatlat();
+      let kaz=d.p1.puan>d.p2.puan?d.p1:d.p2,kay=d.p1.puan>d.p2.puan?d.p2:d.p1;
+      let kazYeni=kaz.puan+25,kayYeni=Math.max(0,kay.puan-30);
+      d.altin+=50;if(kazYeni>d.rekor)d.rekor=kazYeni;skorKaydet(kaz.isim,kazYeni);
+      modalAc(`<h2 style="color:#ffd32a">🎉 ${t.kazandin}</h2><p><b>${kaz.isim}</b>: ${kazYeni} ${t.puan} (+50 ${t.altin})</p><p style="color:#ff7675">${t.kaybettin}: <b>${kay.isim}</b> (${kayYeni} ${t.puan})</p><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">${t.tamam}</button>`);
+    }else modalAc(`<h2 style="color:#ffd32a">🤝 ${t.berabere}</h2><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">${t.tamam}</button>`);
+    d.vsSira=1;
+  }else{
+    let kayip=d.yanlis+d.bos,ceza=kayip>d.dogru?10:0,finalSkor=Math.max(0,d.puan-ceza);
+    if(finalSkor>d.rekor)d.rekor=finalSkor;skorKaydet(prof.isim,finalSkor);
+    document.getElementById("msg").textContent=sebep+" | "+t.seviye+" "+d.svy;
+    let k=document.getElementById("karneKutu");k.style.display="block";
+    k.innerHTML=`<b>${t.seviye} ${d.svy}</b><br><b style="color:#ffd32a">${d.puan} ${t.puan}</b> | ${t.dogru}:${d.dogru} | ${t.yanlis}:${d.yanlis} | ${t.bos}:${d.bos}`;
+  }
+  document.getElementById("tBtn").style.display="block";guncelle();
+}
+
+function joker(tp){
+  if(!d.aktif||d.dur||d.can<=0)return;let t=L();
+  if(tp=="d"&&d.jd>0){d.jd--;d.donma+=5;guncelle();}
+  else if(tp=="s"&&d.js>0){d.js--;d.kalan+=10;d.max=Math.max(d.max,d.kalan);guncelle();}
+  else if(tp=="e"&&d.je>0){d.je--;let sil=0;d.siklar.forEach((v,i)=>{if(v!==d.dc&&sil<2){let b=document.getElementById("sik_"+i);if(b){b.style.visibility="hidden";sil++;}}});guncelle();}
+  else if(tp=="a"){if(d.mod=="vs"){if(d.vsAtla<=0)return;d.vsAtla--;}else{if(d.ja<=0)return;d.ja--;}d.bos++;document.getElementById("msg").textContent=t.dogrusu+": "+d.dc;yeniSoru();}
+}
+function duraklat(){if(!d.aktif||d.can<=0)return;d.dur=!d.dur;document.getElementById("pBtn").textContent=d.dur?">":"II";document.getElementById("soru").textContent=d.dur?L().durak:d.soru;}
+function geriAc(){
+  let esk=d.dur,t=L();d.dur=true;
+  if(d.mod=="vs")modalAc(`<h3>${t.vs}</h3><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">${t.tamam}</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">${t.iptal}</button>`);
+  else modalAc(`<h3>${t.kaydetSor}</h3><p>${prof.isim}: ${d.puan} ${t.puan}</p><button class="btn" style="background:#00b894;width:100%;margin-bottom:8px" onclick="geriSec(true)">${t.kaydetBtn}</button><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">${t.kaydetmeBtn}</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">${t.iptal}</button>`);
+}
+function geriSec(k){if(k&&d.mod=="solo"){if(d.puan>d.rekor)d.rekor=d.puan;skorKaydet(prof.isim,d.puan);}d.aktif=false;d.dur=false;modalKapat();guncelle();document.getElementById("oyun").style.display="none";document.getElementById("menu").style.display="block";}
+function magazaAc(){
+  d.magazaAcik=true;let t=L();
+  modalAc(`<h3>${t.magaza} (${t.altin}: ${d.altin})</h3>
+    <button class="btn" style="background:#0984e3;width:100%;margin:3px 0" onclick="al('d',30)">❄️ ${t.magItem} - 30</button>
+    <button class="btn" style="background:#00b894;width:100%;margin:3px 0" onclick="al('e',40)">✂️ ${t.magItem} - 40</button>
+    <button class="btn" style="background:#6c5ce7;width:100%;margin:3px 0" onclick="al('s',50)">⏱️ ${t.magItem} - 50</button>
+    <button class="btn" style="background:#e94560;width:100%;margin:3px 0" onclick="al('c',60)">❤️ ${t.magItem} - 60</button>
+    <button class="btn" style="background:#e17055;width:100%;margin:3px 0" onclick="al('a',70)">⏭️ ${t.magItem} - 70</button>
+    <button class="btn" style="background:#fdcb6e;color:#121225;width:100%;margin:3px 0" onclick="al('2x',80)">⚡ ${t.magItem} - 80</button>
+    <br><button class="btn" style="background:#636e72;width:100%;margin-top:6px" onclick="modalKapat()">${t.kapat}</button>`);
+}
+function al(tp,f){if(d.altin<f)return alert(L().yetersiz);d.altin-=f;if(tp=="d")d.jd++;else if(tp=="s")d.js++;else if(tp=="e")d.je++;else if(tp=="a")d.ja++;else if(tp=="2x")d.ciftPuan+=3;else{d.jc++;if(d.can>0)d.can++;}guncelle();if(d.magazaAcik)magazaAc();}
+setInterval(()=>{if(d.aktif&&!d.dur&&d.can>0){if(d.donma>0){d.donma-=0.05;document.getElementById("bar").style.background="#00cec9";}else{d.kalan-=0.05;let o=Math.max(0,d.kalan/d.max);document.getElementById("bar").style.width=(o*100)+"%";document.getElementById("bar").style.background=o>.5?"#00b894":(o>.25?"#ffd32a":"#ff4757");if(d.kalan<=0){d.bos++;d.can--;d.kombo=0;if(d.can<=0)bitti(L().sureDoldu);else yeniSoru();}}}},50);
+</script>
+</body>
+</html>
