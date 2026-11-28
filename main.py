@@ -33,7 +33,7 @@ async def main(page: ft.Page):
         pass
     def L():
         return T.get(prof["dil"], T["tr"])
-    d = {"mod": "solo", "zorIdx": 1, "dersIdx": 0, "puan": 0, "can": 3, "svy": 1, "dc": "", "kalan": 12.0, "max": 12.0, "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0, "kombo": 0, "jd": 1, "js": 0, "ja": 1, "je": 1, "jc": 0, "cift_puan": 0, "soru": "12 + 8 = ?", "simge": "M", "renk": "#e74c3c", "yerel_skorlar": list(), "online_ok": False, "dogru": 0, "yanlis": 0, "bos": 0, "top_sure": 0.0, "vs_sira": 1, "vs_atla": 3, "p1": dict(), "p2": dict(), "siklar": list(), "sorulanlar": set()}
+    d = {"mod": "solo", "zorIdx": 1, "dersIdx": 0, "puan": 0, "can": 3, "svy": 1, "dc": "", "kalan": 12.0, "max": 12.0, "donma": 0.0, "aktif": False, "dur": False, "altin": 50, "rekor": 0, "kombo": 0, "jd": 1, "js": 0, "ja": 1, "je": 1, "jc": 0, "cift_puan": 0, "soru": "12 + 8 = ?", "simge": "M", "renk": "#e74c3c", "yerel_skorlar": list(), "dogru": 0, "yanlis": 0, "bos": 0, "top_sure": 0.0, "vs_sira": 1, "vs_atla": 3, "p1": dict(), "p2": dict(), "siklar": list(), "sorulanlar": set()}
     konfeti_katman = ft.Stack(width=360, height=640)
     konfeti_renkler = ("#ff4757", "#ffd32a", "#00b894", "#0984e3", "#a29bfe", "#ff6b81", "#00cec9", "#fdcb6e")
 
@@ -143,23 +143,23 @@ async def main(page: ft.Page):
 
         def sinif_yenile():
             sinif_kolon.controls.clear()
-            bas = 1 if g_kad == 0 else (5 if g_kad == 1 else (9 if g_kad == 2 else 1))
+            bas = 1 if g_kad[0] == 0 else (5 if g_kad[0] == 1 else (9 if g_kad[0] == 2 else 1))
             for i in range(4):
-                sinif_kolon.controls.append(ft.Button(f"{bas + i}{t['sinif']}", bgcolor="#0984e3" if g_sin == i else "#121225", color="white", width=240, on_click=lambda _, idx=i: (g_sin.__setitem__(0, idx), sinif_yenile(), page.update())))
+                sinif_kolon.controls.append(ft.Button(f"{bas + i}{t['sinif']}", bgcolor="#0984e3" if g_sin[0] == i else "#121225", color="white", width=240, on_click=lambda _, idx=i: (g_sin.__setitem__(0, idx), sinif_yenile(), page.update())))
 
         def kad_sec(idx):
-            g_kad = idx
+            g_kad[0] = idx
             sinif_yenile()
             page.update()
 
-        kad_satir1 = ft.Row([ft.Button(t["kad"], bgcolor="#00b894", color="white", width=116, on_click=lambda _: kad_sec(0)), ft.Button(t["kad"], bgcolor="#0984e3", color="white", width=116, on_click=lambda _: kad_sec(1))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
-        kad_satir2 = ft.Row([ft.Button(t["kad"], bgcolor="#e17055", color="white", width=116, on_click=lambda _: kad_sec(2)), ft.Button(t["kad"], bgcolor="#6c5ce7", color="white", width=116, on_click=lambda _: kad_sec(3))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        kad_satir1 = ft.Row([ft.Button(t["kad"][0], bgcolor="#00b894", color="white", width=116, on_click=lambda _: kad_sec(0)), ft.Button(t["kad"][1], bgcolor="#0984e3", color="white", width=116, on_click=lambda _: kad_sec(1))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        kad_satir2 = ft.Row([ft.Button(t["kad"][2], bgcolor="#e17055", color="white", width=116, on_click=lambda _: kad_sec(2)), ft.Button(t["kad"][3], bgcolor="#6c5ce7", color="white", width=116, on_click=lambda _: kad_sec(3))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         async def kaydet_tikla(ev=None):
             ad = (ad_input.value or "").strip()[:20]
             if not ad:
                 return
-            prof.update({"isim": ad, "kadIdx": g_kad, "sinIdx": g_sin, "kayitli": True})
+            prof.update({"isim": ad, "kadIdx": g_kad[0], "sinIdx": g_sin[0], "kayitli": True})
             try:
                 await page.client_storage.set_async("hm_prof", prof)
             except Exception:
@@ -187,10 +187,10 @@ async def main(page: ft.Page):
             durum_txt.value = f"{t['modlar'][d['zorIdx']]} | {t['dersler'][d['dersIdx']]}"
             page.update()
 
-        zor_row1 = ft.Row([ft.Button(t["modlar"], bgcolor="#00b894", color="white", width=116, on_click=lambda _: zor_sec(0)), ft.Button(t["modlar"], bgcolor="#0984e3", color="white", width=116, on_click=lambda _: zor_sec(1))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
-        zor_row2 = ft.Row([ft.Button(t["modlar"], bgcolor="#e17055", color="white", width=116, on_click=lambda _: zor_sec(2)), ft.Button(t["modlar"], bgcolor="#d63031", color="white", width=116, on_click=lambda _: zor_sec(3))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
-        kat_row1 = ft.Row([ft.Button(t["dersler"], bgcolor="#e74c3c", color="white", width=116, height=48, on_click=lambda _: ders_sec(0)), ft.Button(t["dersler"], bgcolor="#2980b9", color="white", width=116, height=48, on_click=lambda _: ders_sec(1))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
-        kat_row2 = ft.Row([ft.Button(t["dersler"], bgcolor="#27ae60", color="white", width=116, height=48, on_click=lambda _: ders_sec(2)), ft.Button(t["dersler"], bgcolor="#f39c12", color="white", width=116, height=48, on_click=lambda _: ders_sec(3))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        zor_row1 = ft.Row([ft.Button(t["modlar"][0], bgcolor="#00b894", color="white", width=116, on_click=lambda _: zor_sec(0)), ft.Button(t["modlar"][1], bgcolor="#0984e3", color="white", width=116, on_click=lambda _: zor_sec(1))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        zor_row2 = ft.Row([ft.Button(t["modlar"][2], bgcolor="#e17055", color="white", width=116, on_click=lambda _: zor_sec(2)), ft.Button(t["modlar"][3], bgcolor="#d63031", color="white", width=116, on_click=lambda _: zor_sec(3))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        kat_row1 = ft.Row([ft.Button(t["dersler"][0], bgcolor="#e74c3c", color="white", width=116, height=48, on_click=lambda _: ders_sec(0)), ft.Button(t["dersler"][1], bgcolor="#2980b9", color="white", width=116, height=48, on_click=lambda _: ders_sec(1))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
+        kat_row2 = ft.Row([ft.Button(t["dersler"][2], bgcolor="#27ae60", color="white", width=116, height=48, on_click=lambda _: ders_sec(2)), ft.Button(t["dersler"][3], bgcolor="#f39c12", color="white", width=116, height=48, on_click=lambda _: ders_sec(3))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)
 
         page.show_dialog(ft.AlertDialog(bgcolor="#1e1e3f", title=ft.Text(prof_metin_yap(), size=13, color="white"), content=ft.Column([durum_txt, zor_row1, zor_row2, kat_row1, kat_row2, ft.Row([ft.Button(t["tek"], bgcolor="#0984e3", color="white", width=116, on_click=lambda _: (page.pop_dialog(), oyun_basla_mod("solo"))), ft.Button(t["vs"], bgcolor="#e17055", color="white", width=116, on_click=lambda _: (page.pop_dialog(), oyun_basla_mod("vs")))], alignment=ft.MainAxisAlignment.CENTER, spacing=6)], tight=True, spacing=5), actions=[ft.TextButton(t["iptal"], on_click=lambda _: page.pop_dialog())]))
     def oyun_basla_mod(mod):
@@ -240,7 +240,6 @@ async def main(page: ft.Page):
 
     sik_butonlar = [ft.Button(f"{harfler[i]}) ?", bgcolor=sik_renk[i], color="white", width=155, height=52, on_click=lambda _, idx=i: sik_sec(idx)) for i in range(4)]
     sik_kolon = ft.Column([ft.Row([sik_butonlar, sik_butonlar], alignment=ft.MainAxisAlignment.CENTER, spacing=8), ft.Row([sik_butonlar, sik_butonlar], alignment=ft.MainAxisAlignment.CENTER, spacing=8)], spacing=8, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-
     def guncelle():
         t = L()
         ust_txt.value = f"{t['can']}:{d['can']} P:{d['puan']} S:{d['svy']}"
@@ -290,50 +289,45 @@ async def main(page: ft.Page):
 
     def soru_uret():
         t = L()
-        if d["dersIdx"] == 1:
-            m, a = random.randint(2, 15), random.randint(2, 10)
-            f = m * a
-            siklar = [f"{f} N", f"{f + m} N", f"{max(1, f - a)} N", f"{f * 2} N"]
-            random.shuffle(siklar)
-            return f"F = m . a (m={m}kg, a={a}m/s2) => F=?", f"{f} N", "F", siklar
-        if d["dersIdx"] == 2:
-            yil = random.randint(11, 20) * 100 + random.randint(1, 95)
-            yy = ((yil - 1) // 100) + 1
-            siklar = [str(yy), str(yy - 1), str(yy + 1), str(yy + 2)]
-            random.shuffle(siklar)
-            return f"{yil} => Century / YY = ?", str(yy), "H", siklar
-        if d["dersIdx"] == 3:
-            b = random.randint(2, 8)
-            cv = b * 32 - 1
-            siklar = [str(cv), str(cv + 4), str(cv - 4), str(cv + 8)]
-            random.shuffle(siklar)
-            return f"{b - 1}, {b * 2 - 1}, {b * 4 - 1}, {b * 8 - 1}, ?", str(cv), "L", siklar
-
-        guc = (d["zorIdx"] + 1) + prof["kadIdx"] + (d["svy"] - 1)
         while True:
-            if guc <= 2:
-                s1, s2 = random.randint(4, 15), random.randint(3, 14)
-                cvp, metin, simge = (s1 + s2, f"{s1} + {s2} = ?", "+") if random.random() < 0.5 else (s1 * s2, f"{s1} x {s2} = ?", "x")
-            elif guc <= 4:
-                a, x, b = random.randint(3, 9), random.randint(4, 15), random.randint(5, 20)
-                cvp, metin, simge = x, f"{a}x + {b} = {a * x + b} ({t['xBul']})", "X"
+            if d["dersIdx"] == 1:
+                m, a = random.randint(2, 15), random.randint(2, 10)
+                f = m * a
+                metin, cvp, simge = f"F = m . a (m={m}kg, a={a}m/s2) => F=?", f"{f} N", "F"
+                adaylar = [f"{f} N", f"{f + m} N", f"{max(1, f - a)} N", f"{f * 2} N"]
+            elif d["dersIdx"] == 2:
+                yil = random.randint(11, 20) * 100 + random.randint(1, 95)
+                yy = ((yil - 1) // 100) + 1
+                metin, cvp, simge = f"{yil} => Century / YY = ?", str(yy), "H"
+                adaylar = [str(yy), str(yy - 1), str(yy + 1), str(yy + 2)]
+            elif d["dersIdx"] == 3:
+                b = random.randint(2, 8)
+                cv = b * 32 - 1
+                metin, cvp, simge = f"{b - 1}, {b * 2 - 1}, {b * 4 - 1}, {b * 8 - 1}, ?", str(cv), "L"
+                adaylar = [str(cv), str(cv + 4), str(cv - 4), str(cv + 8)]
             else:
-                s1, s2 = random.randint(28, 82), random.randint(24, 88)
-                cvp, metin, simge = s1 * s2, f"{s1} x {s2} ({t['soruEk']})", "x"
+                guc = (d["zorIdx"] + 1) + prof["kadIdx"] + (d["svy"] - 1)
+                if guc <= 2:
+                    s1, s2 = random.randint(4, 15), random.randint(3, 14)
+                    cv, metin, simge = (s1 + s2, f"{s1} + {s2} = ?", "+") if random.random() < 0.5 else (s1 * s2, f"{s1} x {s2} = ?", "x")
+                elif guc <= 4:
+                    a, x, b = random.randint(3, 9), random.randint(4, 15), random.randint(5, 20)
+                    cv, metin, simge = x, f"{a}x + {b} = {a * x + b} ({t['xBul']})", "X"
+                else:
+                    s1, s2 = random.randint(28, 82), random.randint(24, 88)
+                    cv, metin, simge = s1 * s2, f"{s1} x {s2} ({t['soruEk']})", "x"
+                cvp = str(cv)
+                sik_set = {cvp}
+                while len(sik_set) < 4:
+                    fark = random.randint(1, 5) * (10 if abs(cv) > 100 else 2)
+                    aday = cv + (fark if random.random() < 0.5 else -fark)
+                    if aday != cv and aday >= 0:
+                        sik_set.add(str(aday))
+                adaylar = list(sik_set)
             if metin not in d["sorulanlar"]:
                 d["sorulanlar"].add(metin)
-                break
-
-        sik_set = {str(cvp)}
-        while len(sik_set) < 4:
-            fark = random.randint(1, 5) * (10 if abs(cvp) > 100 else 2)
-            aday = cvp + (fark if random.random() < 0.5 else -fark)
-            if aday != cvp and aday >= 0:
-                sik_set.add(str(aday))
-        siklar = list(sik_set)
-        random.shuffle(siklar)
-        return metin, str(cvp), simge, siklar
-
+                random.shuffle(adaylar)
+                return metin, cvp, simge, adaylar
     def yeni_soru():
         d["aktif"] = True
         t = L()
@@ -428,7 +422,6 @@ async def main(page: ft.Page):
             karne_kutu.visible = True
         tekrar_btn.visible = True
         guncelle()
-
     def joker(tp):
         if not d["aktif"] or d["dur"] or d["can"] <= 0:
             return
