@@ -1,4 +1,8 @@
 import flet as ft, random, asyncio, json, urllib.request, gc
+if not hasattr(ft, "Button"):
+    ft.Button = ft.ElevatedButton
+if not hasattr(ft, "run"):
+    ft.run = ft.app
 
 FIREBASE_URL = "https://" + "hizli-matematik-10492-default-rtdb" + ".europe-west1.firebasedatabase.app"
 
@@ -542,4 +546,5 @@ async def main(page: ft.Page):
 
     page.run_task(sayac)
 
-ft.run(main)
+ft.app(main)
+
