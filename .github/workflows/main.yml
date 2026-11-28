@@ -1,4 +1,3 @@
-
 name: Build APK
 on: [push, workflow_dispatch]
 jobs:
@@ -10,9 +9,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install Flet
-        run: pip install "flet[all]==0.27.6"
+        run: pip install "flet[all]==0.28.3"
       - name: Build APK
-        run: flet build apk --project HizliMatematik
+        run: flet build apk --project HizliMatematik --yes
       - uses: actions/upload-artifact@v4
         with:
           name: HizliMatematik-APK
