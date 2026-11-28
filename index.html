@@ -45,7 +45,6 @@ input{width:100%;padding:10px;border-radius:8px;border:2px solid #0984e3;backgro
   <button class="btn" id="btnDil" style="background:#00b894;width:240px" onclick="dilAc()">🌍 DİLLER</button><br><br>
   <button class="btn" id="profDegisBtn" style="background:#636e72;width:240px;font-size:12px;padding:8px;display:none" onclick="profilAc()">Profili Değiştir</button>
 </div>
-
 <div class="wrap" id="oyun" style="display:none">
   <div id="vsBanner" style="display:none;background:#e17055;padding:5px;border-radius:8px;font-weight:bold;font-size:12px;margin-bottom:5px"></div>
   <div class="box" style="display:flex;justify-content:space-between;align-items:center;padding:7px">
@@ -81,6 +80,7 @@ const uno=new Array("#e74c3c","#2980b9","#27ae60","#f39c12");
 const sikRenk=new Array("#c0392b","#1f618d","#1e8449","#d68910");
 let prof={isim:"",kadIdx:1,sinIdx:1,kayitli:false,dil:"tr"};
 try{let k=JSON.parse(localStorage.getItem("hm_prof"));if(k&&k.kayitli)prof=Object.assign(prof,k);}catch(e){}
+
 const T={
   tr:{ad:"Türkçe",baslik:"HIZLI MATEMATİK",alt:"UNO Kartlı Ders & Zeka Yarışı",oyna:"OYNA",magaza:"MAĞAZA",skor:"SKOR TABLOSU",diller:"DİLLER",rekor:"EN YÜKSEK SKORUN",profDegis:"Profili Değiştir",profBas:"Oyuncu Profili",adYer:"Adın (Max 20)",kaydet:"KAYDET",iptal:"İptal",kapat:"Kapat",tamam:"Tamam",tekrar:"TEKRAR OYNA",can:"Can",altin:"Altın",dondur:"Dondur",atla:"Atla",durak:"DURAKLATILDI",bitti:"OYUN BİTTİ",puan:"PUAN",dogru:"Doğru",yanlis:"Yanlış",bos:"Boş",seviye:"Seviye",kazandin:"KAZANDIN!",kaybettin:"KAYBETTİN BİR DAHAKİ SEFERE",berabere:"BERABERE!",sureDoldu:"SÜRE DOLDU!",dogrusu:"Doğrusu",harika:"Doğru!",tek:"Tek Kişilik",vs:"1v1 VS (15sn)",sira:"Sıra",baslasin:"Başlasın",kaydetSor:"Skor kaydedilsin mi?",kaydetBtn:"Skoru Kaydet",kaydetmeBtn:"Kaydetme",yetersiz:"Yetersiz altın!",sureAkar:"Dikkat: Süre akmaya devam ediyor!",kad:new Array("İlkokul","Ortaokul","Lise","Üniversite"),sinif:". Sınıf",modlar:new Array("Kolay","Orta","Zor","Çok Zor"),dersler:new Array("Matematik","Fen & Bilim","Tarih & Coğrafya","Genel Kültür & Mantık"),magItem:new Array("Zaman Dondur (5s)","50/50 Şık Eleme","Ekstra Süre (+10s)","Kalıcı +1 Can","Soru Atla (1x)","3 Soru 2X Puan"),soruEk:"işleminin sonucu kaçtır?",xBul:"ise x kaçtır?"},
   en:{ad:"English",baslik:"FAST MATH",alt:"UNO Card Subject & Brain Race",oyna:"PLAY",magaza:"SHOP",skor:"LEADERBOARD",diller:"LANGUAGES",rekor:"HIGH SCORE",profDegis:"Change Profile",profBas:"Player Profile",adYer:"Name (Max 20)",kaydet:"SAVE",iptal:"Cancel",kapat:"Close",tamam:"OK",tekrar:"PLAY AGAIN",can:"HP",altin:"Gold",dondur:"Freeze",atla:"Skip",durak:"PAUSED",bitti:"GAME OVER",puan:"PTS",dogru:"Correct",yanlis:"Wrong",bos:"Empty",seviye:"Level",kazandin:"YOU WON!",kaybettin:"YOU LOST BETTER LUCK NEXT TIME",berabere:"DRAW!",sureDoldu:"TIME IS UP!",dogrusu:"Correct answer",harika:"Correct!",tek:"Single Player",vs:"1v1 VS (15s)",sira:"Turn",baslasin:"Start",kaydetSor:"Save your score?",kaydetBtn:"Save Score",kaydetmeBtn:"Don't Save",yetersiz:"Not enough gold!",sureAkar:"Warning: Timer keeps running!",kad:new Array("Primary","Middle School","High School","University"),sinif:" Grade",modlar:new Array("Easy","Medium","Hard","Extreme"),dersler:new Array("Mathematics","Science","History & Geography","General Knowledge & Logic"),magItem:new Array("Freeze Time (5s)","50/50 Eliminate","Extra Time (+10s)","Permanent +1 HP","Skip Question (1x)","2X Score (3 Qs)"),soruEk:"what is the result?",xBul:"find x:"},
@@ -151,10 +151,10 @@ function profilAc(){
   modalAc(`<h3>${t.profBas}</h3>
     <input id="pAd" maxlength="20" placeholder="${t.adYer}" value="${prof.isim}">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
-      <button class="btn" id="k_0" style="background:#00b894" onclick="kadSec(0)">${t.kad}</button>
-      <button class="btn" id="k_1" style="background:#0984e3" onclick="kadSec(1)">${t.kad}</button>
-      <button class="btn" id="k_2" style="background:#e17055" onclick="kadSec(2)">${t.kad}</button>
-      <button class="btn" id="k_3" style="background:#6c5ce7" onclick="kadSec(3)">${t.kad}</button>
+      <div class="kat-kare" id="k_0" style="background:#00b894" onclick="kadSec(0)">${t.kad}</div>
+      <div class="kat-kare" id="k_1" style="background:#0984e3" onclick="kadSec(1)">${t.kad}</div>
+      <div class="kat-kare" id="k_2" style="background:#e17055" onclick="kadSec(2)">${t.kad}</div>
+      <div class="kat-kare" id="k_3" style="background:#6c5ce7" onclick="kadSec(3)">${t.kad}</div>
     </div>
     <div id="sinifAlani" style="display:flex;flex-direction:column;gap:5px;margin:8px 0"></div>
     <button class="btn" style="background:#ffd32a;color:#121225;width:100%;margin-top:6px" onclick="profilKaydet()">${t.kaydet}</button>`);
@@ -192,7 +192,6 @@ function modVeDersAc(){
 }
 function zorSec(i){d.zorIdx=i;modVeDersAc();}
 function dersSec(i){d.dersIdx=i;modVeDersAc();}
-
 function oyunBaslaMod(mod){
   d.mod=mod;let t=L();
   if(mod=="solo"){modalKapat();document.getElementById("menu").style.display="none";document.getElementById("oyun").style.display="block";baslat();}
@@ -232,19 +231,35 @@ function guncelle(){
   document.getElementById("eBtn").textContent="50/50 ("+d.je+")";
   document.getElementById("aBtn").textContent=d.mod=="vs"?t.atla+" ("+d.vsAtla+")":t.atla+" ("+d.ja+")";
 }
+
 function globalSoruUret(){
   let r=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
   if(d.dersIdx===1){
-    let tip=r(0,2);
-    if(tip===0){let m=r(2,15),a=r(2,10),f=m*a;return {m:`F = m · a  (m = ${m} kg, a = ${a} m/s²) => F = ?`,c:f+" N",s:new Array(f+" N",(f+m)+" N",Math.max(1,f-a)+" N",(f*2)+" N")};}
-    if(tip===1){let v=r(4,12)*10,tm=r(2,7),x=v*tm;return {m:`x = v · t  (v = ${v} km/h, t = ${tm} h) => x = ?`,c:x+" km",s:new Array(x+" km",(x+v)+" km",(x-20)+" km",(v+tm)+" km")};}
-    let i=r(2,8),res=r(3,14),v=i*res;return {m:`V = I · R  (V = ${v} V, I = ${i} A) => R = ?`,c:res+" Ω",s:new Array(res+" Ω",(res+2)+" Ω",(v*i)+" Ω",Math.max(1,res-1)+" Ω")};
+    const fen=new Array(
+      {m:"H2O = ?",c:"Water / Su",s:new Array("Water / Su","Oxygen","Salt","Gold")},
+      {m:"Fe (Periodic Table) = ?",c:"Iron / Demir",s:new Array("Iron / Demir","Gold","Silver","Helium")},
+      {m:"Au (Periodic Table) = ?",c:"Gold / Altın",s:new Array("Gold / Altın","Silver","Copper","Iron")},
+      {m:"NaCl = ?",c:"Salt / Tuz",s:new Array("Salt / Tuz","Sugar","Water","Acid")},
+      {m:"Closest planet to the Sun?",c:"Mercury",s:new Array("Mercury","Venus","Mars","Earth")},
+      {m:"Largest planet in Solar System?",c:"Jupiter",s:new Array("Jupiter","Saturn","Neptune","Uranus")},
+      {m:"Powerhouse of the cell?",c:"Mitochondria",s:new Array("Mitochondria","Ribosome","Nucleus","Golgi")}
+    );
+    return fen[r(0,fen.length-1)];
   }
   if(d.dersIdx===2){
-    let tip=r(0,2);
-    if(tip===0){let yil=r(11,20)*100+r(1,95),yy=Math.floor((yil-1)/100)+1;return {m:`${yil} => Century / YY = ?`,c:String(yy),s:new Array(String(yy),String(yy-1),String(yy+1),String(yy+2))};}
-    if(tip===1){let d1=r(1,15),d2=r(1,15),fk=(d1+d2)*4;return {m:`${d1}°E ↔ ${d2}°W (4 min/1°) => Δt = ?`,c:fk+" min",s:new Array(fk+" min",(fk+12)+" min",Math.max(4,fk-8)+" min",(fk*2)+" min")};}
-    let y=r(1453,1990),gc=2026-y;return {m:`2026 - ${y} = ?`,c:String(gc),s:new Array(String(gc),String(gc+10),String(gc-10),String(gc+5))};
+    const tc=new Array(
+      {m:"1453: Conquest of ...?",c:"Istanbul",s:new Array("Istanbul","Rome","Vienna","Baghdad")},
+      {m:"Capital of Japan?",c:"Tokyo",s:new Array("Tokyo","Kyoto","Osaka","Seoul")},
+      {m:"Longest river in the world?",c:"Nile",s:new Array("Nile","Amazon","Yangtze","Mississippi")},
+      {m:"Highest mountain on Earth?",c:"Everest (8,848m)",s:new Array("Everest (8,848m)","K2","Kilimanjaro","Mont Blanc")},
+      {m:"Capital of South Korea?",c:"Seoul",s:new Array("Seoul","Busan","Tokyo","Beijing")},
+      {m:"Largest ocean on Earth?",c:"Pacific Ocean",s:new Array("Pacific Ocean","Atlantic Ocean","Indian Ocean","Arctic Ocean")},
+      {m:"1071: Battle of ...?",c:"Malazgirt",s:new Array("Malazgirt","Mohacs","Ankara","Preveza")},
+      {m:"Capital of France?",c:"Paris",s:new Array("Paris","Lyon","Marseille","Madrid")},
+      {m:"1923: Republic of ... founded?",c:"Türkiye",s:new Array("Türkiye","Italy","Germany","Spain")},
+      {m:"Capital of Russia?",c:"Moscow",s:new Array("Moscow","St. Petersburg","Kazan","Sochi")}
+    );
+    return tc[r(0,tc.length-1)];
   }
   if(d.dersIdx===3){
     let b=r(2,8),tip=r(0,2);
@@ -254,143 +269,86 @@ function globalSoruUret(){
   }
   return null;
 }
-
 function soruUret(){
   let t=L(),deneme=0;
   while(deneme<25){
     deneme++;
     let aday=globalSoruUret();
-    if(aday&&!d.sorulanlar.has(aday.m)){
-      d.sorulanlar.add(aday.m);
-      return {metin:aday.m,cvp:aday.c,simge:t.dersler[d.dersIdx].charAt(0),siklar:aday.s.slice().sort(()=>Math.random()-.5)};
-    }
+    if(aday&&!d.sorulanlar.has(aday.m)){d.sorulanlar.add(aday.m);return {metin:aday.m,cvp:aday.c,simge:t.dersler[d.dersIdx].charAt(0),siklar:aday.s.slice().sort(()=>Math.random()-.5)};}
     if(aday===null)break;
   }
   let guc=(d.zorIdx+1)+prof.kadIdx+(d.svy-1),s1,s2,cvp,metin,simge="M";
   while(true){
     if(guc<=2){s1=4+Math.floor(Math.random()*15);s2=3+Math.floor(Math.random()*14);if(Math.random()<.5){cvp=s1+s2;metin=s1+" + "+s2+" = ?";simge="+";}else{cvp=s1*s2;metin=s1+" x "+s2+" = ?";simge="x";}}
-    else if(guc<=4){let tip=Math.floor(Math.random()*3);if(tip===0){s1=14+Math.floor(Math.random()*28);s2=12+Math.floor(Math.random()*22);cvp=s1*s2;metin=s1+" x "+s2+" = ?";simge="x";}else if(tip===1){let a=3+Math.floor(Math.random()*7),x=4+Math.floor(Math.random()*11),b=5+Math.floor(Math.random()*15);cvp=x;metin=a+"x + "+b+" = "+(a*x+b)+" ("+t.xBul+")";}else{let a=12+Math.floor(Math.random()*25),b=11+Math.floor(Math.random()*19);cvp=a*b;metin=a+" x "+b+" ("+t.soruEk+")";simge="x";}}
-    else if(guc<=6){let tip=Math.floor(Math.random()*3);if(tip===0){s1=28+Math.floor(Math.random()*55);s2=24+Math.floor(Math.random()*65);cvp=s1*s2;metin=s1+" x "+s2+" ("+t.soruEk+")";simge="x";}else if(tip===1){let a=5+Math.floor(Math.random()*12),b=3+Math.floor(Math.random()*9);cvp=a*b;metin="x + y = "+(a+b)+", x - y = "+(a-b)+" => x · y = ?";}else{let a=15+Math.floor(Math.random()*30),b=14+Math.floor(Math.random()*25),c=10+Math.floor(Math.random()*40);cvp=a*b+c;metin="("+a+" x "+b+") + "+c+" = ?";}}
-    else{let tip=Math.floor(Math.random()*3);if(tip===0){s1=45+Math.floor(Math.random()*54);s2=52+Math.floor(Math.random()*47);cvp=s1*s2;metin=s1+" x "+s2+" ("+t.soruEk+")";simge="x";}else if(tip===1){let k=4+Math.floor(Math.random()*12),m=2+Math.floor(Math.random()*9);cvp=k*k+m;metin="f(x) = x² + "+m+" => f("+k+") = ?";}else{let a=6+Math.floor(Math.random()*14);cvp=a*(a-1)/2;metin="C("+a+", 2) = ?";}}
+    else if(guc<=4){let a=3+Math.floor(Math.random()*7),x=4+Math.floor(Math.random()*11),b=5+Math.floor(Math.random()*15);cvp=x;metin=a+"x + "+b+" = "+(a*x+b)+" ("+t.xBul+")";simge="X";}
+    else{s1=28+Math.floor(Math.random()*55);s2=24+Math.floor(Math.random()*65);cvp=s1*s2;metin=s1+" x "+s2+" ("+t.soruEk+")";simge="x";}
     if(!d.sorulanlar.has(metin)){d.sorulanlar.add(metin);break;}
   }
   let set=new Set(new Array(String(cvp)));
   while(set.size<4){let fark=(Math.floor(Math.random()*5)+1)*(Math.abs(cvp)>100?10:2);let aday=cvp+(Math.random()<.5?fark:-fark);if(aday!==cvp&&aday>=0)set.add(String(aday));}
   return {metin,cvp:String(cvp),simge,siklar:Array.from(set).sort(()=>Math.random()-.5)};
 }
+
 function yeniSoru(){
   d.aktif=true;let t=L();
-  let ys=d.puan<40?1:(d.puan<90?2:(d.puan<150?3:4));
-  if(ys>d.svy)d.svy=ys;
+  let ys=d.puan<40?1:(d.puan<90?2:(d.puan<150?3:4));if(ys>d.svy)d.svy=ys;
   d.kalan=d.max=(d.mod=="vs"?15:12);d.donma=0;
-  let q=soruUret();
-  d.dc=q.cvp;d.simge=q.simge;d.soru=q.metin;d.siklar=q.siklar;
-  d.renk=uno[Math.floor(Math.random()*4)];
-  let sEl=document.getElementById("soru");
-  sEl.style.fontSize=q.metin.length>50?"14px":(q.metin.length>28?"16px":"20px");
+  let q=soruUret();d.dc=q.cvp;d.simge=q.simge;d.soru=q.metin;d.siklar=q.siklar;d.renk=uno[Math.floor(Math.random()*4)];
+  let sEl=document.getElementById("soru");sEl.style.fontSize=q.metin.length>35?"15px":"20px";
   document.getElementById("card").style.background=d.renk;
   document.getElementById("dersEtiket").textContent=t.dersler[d.dersIdx]+" • "+t.modlar[d.zorIdx];
-  sEl.textContent=d.soru;
-  document.getElementById("k1").textContent=document.getElementById("k2").textContent=d.simge;
-  const harfler=new Array("A","B","C","D");
-  document.getElementById("sikGrid").innerHTML=d.siklar.map((val,i)=>`<button class="sbtn" id="sik_${i}" style="background:${sikRenk[i]}" onclick="sikSec(${i})">${harfler[i]}) ${val}</button>`).join("");
+  sEl.textContent=d.soru;document.getElementById("k1").textContent=document.getElementById("k2").textContent=d.simge;
+  const h=new Array("A","B","C","D");
+  document.getElementById("sikGrid").innerHTML=d.siklar.map((val,i)=>`<button class="sbtn" id="sik_${i}" style="background:${sikRenk[i]}" onclick="sikSec(${i})">${h[i]}) ${val}</button>`).join("");
   guncelle();
 }
 
 function sikSec(idx){
   if(!d.aktif||d.dur||d.can<=0)return;let t=L();
   if(d.siklar[idx]===d.dc){
-    d.topSure+=(d.max-d.kalan);d.dogru++;d.kombo++;
-    let carpan=d.ciftPuan>0?2:1;if(d.ciftPuan>0)d.ciftPuan--;
-    let k=(10+(d.kombo-1)*2)*carpan;
-    d.puan+=k;if(d.mod=="solo")d.altin+=10*carpan;
-    document.getElementById("msg").textContent=t.harika+" +"+k+" "+t.puan+(carpan==2?" (2X!)":"");
-    yeniSoru();
-  }else{
-    d.yanlis++;d.can--;d.kombo=0;
-    if(d.can<=0)bitti(t.dogrusu+": "+d.dc);
-    else{document.getElementById("msg").textContent=t.yanlis+"! "+t.dogrusu+": "+d.dc;yeniSoru();}
-  }
+    d.topSure+=(d.max-d.kalan);d.dogru++;d.kombo++;let c=d.ciftPuan>0?2:1;if(d.ciftPuan>0)d.ciftPuan--;
+    let k=(10+(d.kombo-1)*2)*c;d.puan+=k;if(d.mod=="solo")d.altin+=10*c;
+    document.getElementById("msg").textContent=t.harika+" +"+k+" "+t.puan;yeniSoru();
+  }else{d.yanlis++;d.can--;d.kombo=0;if(d.can<=0)bitti(t.dogrusu+": "+d.dc);else{document.getElementById("msg").textContent=t.yanlis+"! "+t.dogrusu+": "+d.dc;yeniSoru();}}
 }
 
 function baslat(){
-  let t=L();
-  d.puan=0;d.svy=1;d.kombo=0;d.dur=false;d.dogru=0;d.yanlis=0;d.bos=0;d.topSure=0;d.ciftPuan=0;
-  d.sorulanlar=new Set();
-  document.getElementById("karneKutu").style.display="none";
-  document.getElementById("pBtn").textContent="II";document.getElementById("tBtn").style.display="none";
-  if(d.mod=="vs"){
-    d.can=3;d.vsAtla=3;
-    new Array("dBtn","sBtn","eBtn","magBtn").forEach(id=>document.getElementById(id).style.display="none");
-    let aktifAd=d.vsSira==1?d.p1.isim:d.p2.isim;
-    document.getElementById("vsBanner").style.display="block";
-    document.getElementById("vsBanner").textContent=t.vs+" | "+t.sira+": "+aktifAd+" ("+d.vsSira+"/2)";
-    document.getElementById("msg").textContent=aktifAd+"!";
-  }else{
-    d.can=3+d.jc;
-    new Array("dBtn","sBtn","eBtn","magBtn").forEach(id=>document.getElementById(id).style.display="inline-block");
-    document.getElementById("vsBanner").style.display="none";
-    document.getElementById("msg").textContent=prof.isim+"!";
-  }
+  let t=L();d.puan=0;d.svy=1;d.kombo=0;d.dur=false;d.dogru=0;d.yanlis=0;d.bos=0;d.topSure=0;d.ciftPuan=0;d.sorulanlar=new Set();
+  document.getElementById("karneKutu").style.display="none";document.getElementById("pBtn").textContent="II";document.getElementById("tBtn").style.display="none";
+  if(d.mod=="vs"){d.can=3;d.vsAtla=3;new Array("dBtn","sBtn","eBtn","magBtn").forEach(id=>document.getElementById(id).style.display="none");let a=d.vsSira==1?d.p1.isim:d.p2.isim;document.getElementById("vsBanner").style.display="block";document.getElementById("vsBanner").textContent=t.vs+" | "+t.sira+": "+a+" ("+d.vsSira+"/2)";}
+  else{d.can=3+d.jc;new Array("dBtn","sBtn","eBtn","magBtn").forEach(id=>document.getElementById(id).style.display="inline-block");document.getElementById("vsBanner").style.display="none";}
   yeniSoru();
 }
+
 function bitti(sebep){
-  if(d.magazaAcik)modalKapat();
-  let t=L();d.aktif=false;d.kombo=0;
-  document.getElementById("sikGrid").innerHTML="";
-  document.getElementById("card").style.background="#e74c3c";
-  document.getElementById("soru").style.fontSize="20px";
-  document.getElementById("soru").textContent=t.bitti+"\n"+d.puan+" "+t.puan;
+  if(d.magazaAcik)modalKapat();let t=L();d.aktif=false;d.kombo=0;document.getElementById("sikGrid").innerHTML="";document.getElementById("card").style.background="#e74c3c";document.getElementById("soru").textContent=t.bitti+"\n"+d.puan+" "+t.puan;
   if(d.mod=="vs"){
     let ort=d.dogru>0?(d.topSure/d.dogru):99;
-    if(d.vsSira==1){
-      d.p1={isim:d.p1.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};d.vsSira=2;
-      modalAc(`<h3>${d.p1.isim}</h3><p>${d.p1.puan} ${t.puan}</p><p style="color:#ffd32a">${t.sira}: <b>${d.p2.isim}</b></p><button class="btn" style="background:#00b894;width:100%" onclick="modalKapat();baslat()">${d.p2.isim} - ${t.baslasin}</button>`);
-      return;
-    }
+    if(d.vsSira==1){d.p1={isim:d.p1.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};d.vsSira=2;modalAc(`<h3>${d.p1.isim}</h3><p>${d.p1.puan} ${t.puan}</p><button class="btn" style="background:#00b894;width:100%" onclick="modalKapat();baslat()">${d.p2.isim} - ${t.baslasin}</button>`);return;}
     d.p2={isim:d.p2.isim,puan:d.puan,dogru:d.dogru,yanlis:d.yanlis,bos:d.bos,ortSure:ort};
-    if(d.p1.puan!==d.p2.puan){
-      konfetiPatlat();
-      let kaz=d.p1.puan>d.p2.puan?d.p1:d.p2,kay=d.p1.puan>d.p2.puan?d.p2:d.p1;
-      let kazYeni=kaz.puan+25,kayYeni=Math.max(0,kay.puan-30);
-      d.altin+=50;if(kazYeni>d.rekor)d.rekor=kazYeni;skorKaydet(kaz.isim,kazYeni);
-      modalAc(`<h2 style="color:#ffd32a">🎉 ${t.kazandin}</h2><p><b>${kaz.isim}</b>: ${kazYeni} ${t.puan} (+50 ${t.altin})</p><p style="color:#ff7675">${t.kaybettin}: <b>${kay.isim}</b> (${kayYeni} ${t.puan})</p><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">${t.tamam}</button>`);
-    }else modalAc(`<h2 style="color:#ffd32a">🤝 ${t.berabere}</h2><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">${t.tamam}</button>`);
+    if(d.p1.puan!==d.p2.puan){konfetiPatlat();let kaz=d.p1.puan>d.p2.puan?d.p1:d.p2,kay=d.p1.puan>d.p2.puan?d.p2:d.p1,ky=kaz.puan+25,ay=Math.max(0,kay.puan-30);d.altin+=50;skorKaydet(kaz.isim,ky);modalAc(`<h2 style="color:#ffd32a">🎉 ${t.kazandin}</h2><p><b>${kaz.isim}</b>: ${ky} ${t.puan}</p><p style="color:#ff7675">${t.kaybettin}: <b>${kay.isim}</b> (${ay})</p><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">${t.tamam}</button>`);}
+    else modalAc(`<h2 style="color:#ffd32a">🤝 ${t.berabere}</h2><button class="btn" style="background:#0984e3;width:100%" onclick="modalKapat()">${t.tamam}</button>`);
     d.vsSira=1;
   }else{
-    let kayip=d.yanlis+d.bos,ceza=kayip>d.dogru?10:0,finalSkor=Math.max(0,d.puan-ceza);
-    if(finalSkor>d.rekor)d.rekor=finalSkor;skorKaydet(prof.isim,finalSkor);
-    document.getElementById("msg").textContent=sebep+" | "+t.seviye+" "+d.svy;
-    let k=document.getElementById("karneKutu");k.style.display="block";
-    k.innerHTML=`<b>${t.seviye} ${d.svy}</b><br><b style="color:#ffd32a">${d.puan} ${t.puan}</b> | ${t.dogru}:${d.dogru} | ${t.yanlis}:${d.yanlis} | ${t.bos}:${d.bos}`;
+    let fs=Math.max(0,d.puan-(d.yanlis+d.bos>d.dogru?10:0));if(fs>d.rekor)d.rekor=fs;skorKaydet(prof.isim,fs);
+    let k=document.getElementById("karneKutu");k.style.display="block";k.innerHTML=`<b>${t.seviye} ${d.svy}</b><br><b style="color:#ffd32a">${d.puan} ${t.puan}</b> | ${t.dogru}:${d.dogru} | ${t.yanlis}:${d.yanlis} | ${t.bos}:${d.bos}`;
   }
   document.getElementById("tBtn").style.display="block";guncelle();
 }
 
 function joker(tp){
-  if(!d.aktif||d.dur||d.can<=0)return;let t=L();
+  if(!d.aktif||d.dur||d.can<=0)return;
   if(tp=="d"&&d.jd>0){d.jd--;d.donma+=5;guncelle();}
   else if(tp=="s"&&d.js>0){d.js--;d.kalan+=10;d.max=Math.max(d.max,d.kalan);guncelle();}
-  else if(tp=="e"&&d.je>0){d.je--;let sil=0;d.siklar.forEach((v,i)=>{if(v!==d.dc&&sil<2){let b=document.getElementById("sik_"+i);if(b){b.style.visibility="hidden";sil++;}}});guncelle();}
-  else if(tp=="a"){if(d.mod=="vs"){if(d.vsAtla<=0)return;d.vsAtla--;}else{if(d.ja<=0)return;d.ja--;}d.bos++;document.getElementById("msg").textContent=t.dogrusu+": "+d.dc;yeniSoru();}
+  else if(tp=="e"&&d.je>0){d.je--;let s=0;d.siklar.forEach((v,i)=>{if(v!==d.dc&&s<2){let b=document.getElementById("sik_"+i);if(b){b.style.visibility="hidden";s++;}}});guncelle();}
+  else if(tp=="a"){if(d.mod=="vs"){if(d.vsAtla<=0)return;d.vsAtla--;}else{if(d.ja<=0)return;d.ja--;}d.bos++;yeniSoru();}
 }
 function duraklat(){if(!d.aktif||d.can<=0)return;d.dur=!d.dur;document.getElementById("pBtn").textContent=d.dur?">":"II";document.getElementById("soru").textContent=d.dur?L().durak:d.soru;}
-function geriAc(){
-  let esk=d.dur,t=L();d.dur=true;
-  if(d.mod=="vs")modalAc(`<h3>${t.vs}</h3><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">${t.tamam}</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">${t.iptal}</button>`);
-  else modalAc(`<h3>${t.kaydetSor}</h3><p>${prof.isim}: ${d.puan} ${t.puan}</p><button class="btn" style="background:#00b894;width:100%;margin-bottom:8px" onclick="geriSec(true)">${t.kaydetBtn}</button><button class="btn" style="background:#ff4757;width:100%;margin-bottom:8px" onclick="geriSec(false)">${t.kaydetmeBtn}</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">${t.iptal}</button>`);
-}
+function geriAc(){let esk=d.dur,t=L();d.dur=true;modalAc(`<h3>${t.kaydetSor}</h3><button class="btn" style="background:#00b894;width:100%;margin-bottom:6px" onclick="geriSec(true)">${t.kaydetBtn}</button><button class="btn" style="background:#ff4757;width:100%;margin-bottom:6px" onclick="geriSec(false)">${t.kaydetmeBtn}</button><button class="btn" style="background:#636e72;width:100%" onclick="d.dur=${esk};modalKapat()">${t.iptal}</button>`);}
 function geriSec(k){if(k&&d.mod=="solo"){if(d.puan>d.rekor)d.rekor=d.puan;skorKaydet(prof.isim,d.puan);}d.aktif=false;d.dur=false;modalKapat();guncelle();document.getElementById("oyun").style.display="none";document.getElementById("menu").style.display="block";}
 function magazaAc(){
   d.magazaAcik=true;let t=L();
-  modalAc(`<h3>${t.magaza} (${t.altin}: ${d.altin})</h3>
-    <button class="btn" style="background:#0984e3;width:100%;margin:3px 0" onclick="al('d',30)">❄️ ${t.magItem} - 30</button>
-    <button class="btn" style="background:#00b894;width:100%;margin:3px 0" onclick="al('e',40)">✂️ ${t.magItem} - 40</button>
-    <button class="btn" style="background:#6c5ce7;width:100%;margin:3px 0" onclick="al('s',50)">⏱️ ${t.magItem} - 50</button>
-    <button class="btn" style="background:#e94560;width:100%;margin:3px 0" onclick="al('c',60)">❤️ ${t.magItem} - 60</button>
-    <button class="btn" style="background:#e17055;width:100%;margin:3px 0" onclick="al('a',70)">⏭️ ${t.magItem} - 70</button>
-    <button class="btn" style="background:#fdcb6e;color:#121225;width:100%;margin:3px 0" onclick="al('2x',80)">⚡ ${t.magItem} - 80</button>
-    <br><button class="btn" style="background:#636e72;width:100%;margin-top:6px" onclick="modalKapat()">${t.kapat}</button>`);
+  modalAc(`<h3>${t.magaza} (${t.altin}: ${d.altin})</h3><button class="btn" style="background:#0984e3;width:100%;margin:3px 0" onclick="al('d',30)">❄️ ${t.magItem} - 30</button><button class="btn" style="background:#00b894;width:100%;margin:3px 0" onclick="al('e',40)">✂️ ${t.magItem} - 40</button><button class="btn" style="background:#6c5ce7;width:100%;margin:3px 0" onclick="al('s',50)">⏱️ ${t.magItem} - 50</button><button class="btn" style="background:#e94560;width:100%;margin:3px 0" onclick="al('c',60)">❤️ ${t.magItem} - 60</button><button class="btn" style="background:#e17055;width:100%;margin:3px 0" onclick="al('a',70)">⏭️ ${t.magItem} - 70</button><button class="btn" style="background:#fdcb6e;color:#121225;width:100%;margin:3px 0" onclick="al('2x',80)">⚡ ${t.magItem} - 80</button><br><button class="btn" style="background:#636e72;width:100%;margin-top:6px" onclick="modalKapat()">${t.kapat}</button>`);
 }
 function al(tp,f){if(d.altin<f)return alert(L().yetersiz);d.altin-=f;if(tp=="d")d.jd++;else if(tp=="s")d.js++;else if(tp=="e")d.je++;else if(tp=="a")d.ja++;else if(tp=="2x")d.ciftPuan+=3;else{d.jc++;if(d.can>0)d.can++;}guncelle();if(d.magazaAcik)magazaAc();}
 setInterval(()=>{if(d.aktif&&!d.dur&&d.can>0){if(d.donma>0){d.donma-=0.05;document.getElementById("bar").style.background="#00cec9";}else{d.kalan-=0.05;let o=Math.max(0,d.kalan/d.max);document.getElementById("bar").style.width=(o*100)+"%";document.getElementById("bar").style.background=o>.5?"#00b894":(o>.25?"#ffd32a":"#ff4757");if(d.kalan<=0){d.bos++;d.can--;d.kombo=0;if(d.can<=0)bitti(L().sureDoldu);else yeniSoru();}}}},50);
