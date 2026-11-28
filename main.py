@@ -1,5 +1,8 @@
 import flet as ft, random, asyncio, json, urllib.request, gc
 if not hasattr(ft, "Button"):
+        page.show_dialog = page.open
+    page.pop_dialog = lambda: page.close(page.dialog) if page.dialog else None
+
     ft.Button = ft.ElevatedButton
 if not hasattr(ft, "run"):
     ft.run = ft.app
@@ -546,5 +549,6 @@ async def main(page: ft.Page):
 
     page.run_task(sayac)
 
-ft.app(main)
+ft.app.run(main)
+
 
